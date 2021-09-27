@@ -4,3 +4,5 @@ src/migrations
 .env.development
 .env.test
 .env.production
+
+*.sql
