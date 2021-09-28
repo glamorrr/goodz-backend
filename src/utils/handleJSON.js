@@ -5,7 +5,8 @@ const handleSuccess = (data = null) => {
   };
 };
 
-const handleFail = (data = null) => {
+const handleFail = (err = null, data = null) => {
+  if (process.env.NODE_ENV !== 'test') console.log(err);
   return {
     status: 'fail',
     data,
