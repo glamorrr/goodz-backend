@@ -1,5 +1,17 @@
 {
   "prettier.printWidth": 80,
   "prettier.tabWidth": 2,
-  "prettier.singleQuote": true
+  "prettier.singleQuote": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "127.0.0.1",
+      "port": 5432,
+      "askForPassword": true,
+      "driver": "PostgreSQL",
+      "username": "postgres",
+      "database": "servingid_backend_development",
+      "name": "servingid-backend-development"
+    }
+  ],
 }
