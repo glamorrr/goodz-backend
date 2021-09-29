@@ -5,6 +5,7 @@ const { sequelize } = require('../src/models');
 
 const apiAuthSignup = require('./auth/signup/index.test');
 const apiAuthLogin = require('./auth/login/index.test');
+const apiLinks = require('./links/index.test');
 
 beforeAll(async () => {
   await sequelize.sync({ force: true });
@@ -14,9 +15,16 @@ beforeAll(async () => {
     name: 'McD Indonesia',
     url: 'mcdid',
   });
+  await appRequest.post('/auth/signup').send({
+    email: 'kfcindonesia@gmail.com',
+    password: 'kfcindonesia',
+    name: 'KFC Indonesia',
+    url: 'kfcenak',
+  });
 });
 
 const appRequest = request(app);
 
 apiAuthSignup(appRequest);
 apiAuthLogin(appRequest);
+apiLinks(appRequest);
