@@ -51,7 +51,7 @@ module.exports = (appRequest) => {
       },
     },
     {
-      message: 'should respond password must not undefined',
+      message: 'should respond url must not undefined',
       data: { url: undefined },
       expected: {
         status: 400,
@@ -63,7 +63,7 @@ module.exports = (appRequest) => {
     },
 
     {
-      message: 'should respond password must not too long',
+      message: 'should respond url must not too long',
       data: { url: randomstring.generate(26) },
       expected: {
         status: 400,
@@ -74,7 +74,7 @@ module.exports = (appRequest) => {
       },
     },
     {
-      message: 'should respond password must not too short',
+      message: 'should respond url must not too short',
       data: { url: randomstring.generate(2) },
       expected: {
         status: 400,
