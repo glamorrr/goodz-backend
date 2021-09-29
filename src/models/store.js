@@ -68,7 +68,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       hooks: {
         beforeValidate(store, options) {
-          store.url = store.url?.toLowerCase();
+          store.url = store.url?.toLowerCase().trim();
+          store.name = store.name?.trim();
         },
       },
       sequelize,

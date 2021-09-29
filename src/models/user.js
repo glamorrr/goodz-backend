@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       hooks: {
         beforeValidate: (user, options) => {
-          user.email = user.email?.toLowerCase();
+          user.email = user.email?.toLowerCase().trim();
         },
         beforeCreate: async (user, options) => {
           const hashedPassword = await bcrypt.hash(user.password, 10);
