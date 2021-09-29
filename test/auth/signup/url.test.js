@@ -7,13 +7,24 @@ module.exports = (appRequest) => {
 
   const testData = [
     {
-      message: 'should respond success created 3 chars',
-      data: { url: randomstring.generate(3) },
+      message: 'should respond success',
+      data: { url: 'kfcindonesia' },
       expected: {
         status: 201,
         body: {
           status: 'success',
           data: null,
+        },
+      },
+    },
+    {
+      message: 'should respond url has already been taken',
+      data: { url: 'kfcIndonesia' },
+      expected: {
+        status: 400,
+        body: {
+          status: 'fail',
+          data: { url: 'url has already been taken' },
         },
       },
     },
