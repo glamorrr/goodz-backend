@@ -15,8 +15,8 @@ module.exports = (sequelize, DataTypes) => {
       this.hasOne(Store, { foreignKey: 'userId' });
     }
 
-    async isPasswordValid(plainTextPassword, hashedPassword) {
-      return await bcrypt.compare(plainTextPassword, hashedPassword);
+    async isPasswordValid(plainTextPassword) {
+      return await bcrypt.compare(plainTextPassword, this.hashedPassword);
     }
   }
   User.init(
