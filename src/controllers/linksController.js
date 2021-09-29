@@ -11,8 +11,9 @@ module.exports.links_post = async (req, res) => {
     const { title, href } = req.body;
     const store = await Store.findOne({ where: { userId } });
     const newLink = await store.createLink({ title, href });
-
-    return res.status(201).json(handleSuccess(newLink));
+    return res
+      .status(201)
+      .json(handleSuccess({ ...newLink.toJSON(), storeId: undefined }));
   } catch (err) {
     if (err?.errors?.length) {
       const data = {};

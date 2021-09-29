@@ -19,7 +19,7 @@ module.exports = async (appRequest) => {
       expect(resAddLink.body.data.href).toBe(linkData.href);
       expect(resAddLink.body.data.position).toBe(1);
       expect(resAddLink.body.data.isVisible).toBe(true);
-      expect(resAddLink.body.data.storeId).toBeDefined();
+      expect(resAddLink.body.data.storeId).not.toBeDefined();
     });
 
     test('should respond success add link 4 times and postion=4', async () => {
@@ -44,7 +44,7 @@ module.exports = async (appRequest) => {
       expect(resAddLink.body.data.href).toBe(linkData.href);
       expect(resAddLink.body.data.position).toBe(4);
       expect(resAddLink.body.data.isVisible).toBe(true);
-      expect(resAddLink.body.data.storeId).toBeDefined();
+      expect(resAddLink.body.data.storeId).not.toBeDefined();
     });
 
     test('should respond fail unauthenticated', async () => {
