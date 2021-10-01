@@ -55,11 +55,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       hooks: {
-        beforeValidate: async (link, options) => {
-          const countLink = await Link.count({
-            where: { storeId: link.storeId },
-          });
-          link.position = countLink + 1;
+        beforeValidate: (link, options) => {
           link.title = link.title?.trim();
           link.href = link.href?.trim();
         },
