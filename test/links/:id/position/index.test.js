@@ -1,6 +1,6 @@
 const appRequest = require('../../../appRequest');
 
-describe('PUT links/:id/position', () => {
+describe('PUT /links/:id/position', () => {
   let authCookie;
   let selectedLink;
 
