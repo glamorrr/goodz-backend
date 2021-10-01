@@ -33,6 +33,11 @@ module.exports = (sequelize, DataTypes) => {
             args: [3, 25],
             msg: 'url must be 3 to 25 characters',
           },
+          isString(value) {
+            if (typeof value !== 'string') {
+              throw new Error('url must be 3 to 25 characters');
+            }
+          },
         },
       },
       name: {
@@ -47,6 +52,11 @@ module.exports = (sequelize, DataTypes) => {
           len: {
             args: [3, 25],
             msg: 'name must be 3 to 25 characters',
+          },
+          isString(value) {
+            if (typeof value !== 'string') {
+              throw new Error('name must be 3 to 25 characters');
+            }
           },
         },
       },
@@ -68,8 +78,13 @@ module.exports = (sequelize, DataTypes) => {
     {
       hooks: {
         beforeValidate(store, options) {
-          store.url = store.url?.toLowerCase().trim();
-          store.name = store.name?.trim();
+          if (typeof store.url === 'string') {
+            store.url = store.url.toLowerCase().trim();
+          }
+
+          if (typeof store.name === 'string') {
+            store.name = store.name = store.name.trim();
+          }
         },
       },
       sequelize,
