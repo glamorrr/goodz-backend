@@ -45,10 +45,8 @@ module.exports.links_position_put = async (req, res) => {
   const { position } = req.body;
   try {
     const store = await Store.findOne({ where: { userId } });
-    const totalLinks = await store.countLinks();
-    const isValidPosition =
-      !Number.isInteger(position) || position > totalLinks;
-    if (isValidPosition) {
+    const isPositionValid = await store.isLinkPositionValid(position);
+    if (!isPositionValid) {
       return res
         .status(400)
         .json(

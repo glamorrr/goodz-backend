@@ -13,6 +13,13 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(User, { foreignKey: 'userId', onDelete: 'cascade' });
       this.hasMany(Link, { foreignKey: 'storeId' });
     }
+
+    async isLinkPositionValid(position) {
+      const totalLinks = await this.countLinks();
+      const isValid =
+        Number.isInteger(position) && position >= 1 && position <= totalLinks;
+      return isValid;
+    }
   }
   Store.init(
     {

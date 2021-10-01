@@ -98,7 +98,7 @@ describe('PUT /links/:id/position', () => {
     });
   });
 
-  test('should respond fail (send position < 1)', async () => {
+  test('should respond fail (send position lesser than 1)', async () => {
     const res = await appRequest
       .put(`/links/${selectedLink.id}/position`)
       .send({
@@ -109,7 +109,7 @@ describe('PUT /links/:id/position', () => {
     expect(res.status).toBe(400);
     expect(res.body).toStrictEqual({
       status: 'fail',
-      data: { position: 'oops! failed to change link position' },
+      data: { message: 'oops! failed to change link position' },
     });
   });
 
