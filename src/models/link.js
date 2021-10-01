@@ -28,6 +28,11 @@ module.exports = (sequelize, DataTypes) => {
             args: [3, 50],
             msg: 'title must be 3 to 50 characters',
           },
+          isString(value) {
+            if (typeof value !== 'string') {
+              throw new Error('title must be 3 to 50 characters');
+            }
+          },
         },
       },
       href: {
@@ -36,6 +41,11 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           notNull: { msg: 'url must be a valid url' },
           isUrl: { msg: 'url must be a valid url' },
+          isString(value) {
+            if (typeof value !== 'string') {
+              throw new Error('url must be a valid url');
+            }
+          },
         },
       },
       position: {
@@ -56,8 +66,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       hooks: {
         beforeValidate: (link, options) => {
-          link.title = link.title?.trim();
-          link.href = link.href?.trim();
+          if (typeof link.title === 'string') link.title = link.title.trim();
+          if (typeof link.href === 'string') link.href = link.href.trim();
         },
       },
       sequelize,
