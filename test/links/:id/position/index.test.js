@@ -98,6 +98,21 @@ describe('PUT /links/:id/position', () => {
     });
   });
 
+  test('should respond fail (send position < 1)', async () => {
+    const res = await appRequest
+      .put(`/links/${selectedLink.id}/position`)
+      .send({
+        position: 0,
+      })
+      .set('cookie', authCookie);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toStrictEqual({
+      status: 'fail',
+      data: { position: 'oops! failed to change link position' },
+    });
+  });
+
   test('should respond fail (send position not a number)', async () => {
     const res = await appRequest
       .put(`/links/${selectedLink.id}/position`)

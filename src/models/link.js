@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           isInt: { msg: 'position must be an integer' },
           notNull: { msg: 'position must be an integer' },
-          min: { args: 1, msg: 'position must be positive' },
+          min: { args: 1, msg: 'oops! failed to change link position' },
         },
       },
       isVisible: {
