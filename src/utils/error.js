@@ -10,7 +10,14 @@ class ResourceNotFoundError {
   }
 }
 
+class OtherError {
+  constructor(message = null) {
+    this.message = message;
+  }
+}
+
 module.exports = {
   AuthorizeError,
   ResourceNotFoundError,
+  OtherError,
 };

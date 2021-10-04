@@ -1,5 +1,11 @@
 const cookie = require('cookie');
-const { User, Store, sequelize } = require('../models');
+const {
+  User,
+  Store,
+  sequelize,
+  Sequelize: { UniqueConstraintError, ValidationError },
+} = require('../models');
+const { ResourceNotFoundError, OtherError } = require('../utils/error');
 const {
   handleSuccess,
   handleFail,
@@ -20,20 +26,21 @@ module.exports.signup_post = async (req, res) => {
 
     return res.status(201).json(handleSuccess());
   } catch (err) {
-    if (err?.errors?.length) {
+    if (err instanceof UniqueConstraintError) {
+      const { path } = err.errors[0];
+      let message;
+
+      if (path === 'email') message = 'email has already been taken';
+      if (path === 'url') message = 'url has already been taken';
+
+      return res.status(400).json(handleFail(err, { [path]: message }));
+    }
+
+    if (err instanceof ValidationError) {
       const data = {};
-      err.errors.forEach(({ path, type, origin, message }) => {
-        const isEmailUsed =
-          type === 'unique violation' && path === 'email' && origin === 'DB';
-        if (isEmailUsed) message = 'email has already been taken';
-
-        const isURLUsed =
-          type === 'unique violation' && path === 'url' && origin === 'DB';
-        if (isURLUsed) message = 'url has already been taken';
-
+      err.errors.forEach(({ path, message }) => {
         data[path] = message;
       });
-
       return res.status(400).json(handleFail(err, data));
     }
 
@@ -48,18 +55,10 @@ module.exports.login_post = async (req, res) => {
       where: { email: email?.toLowerCase() || '' },
     });
 
-    if (!user) {
-      return res
-        .status(401)
-        .json(handleFail(null, { message: 'invalid email and password' }));
-    }
+    if (!user) throw new ResourceNotFoundError('invalid email and password');
 
     const isAuthenticated = await user.isPasswordValid(password);
-    if (!isAuthenticated) {
-      return res
-        .status(401)
-        .json(handleFail(null, { message: 'invalid email and password' }));
-    }
+    if (!isAuthenticated) throw new OtherError('invalid email and password');
 
     res.setHeader(
       'Set-Cookie',
@@ -72,6 +71,14 @@ module.exports.login_post = async (req, res) => {
     );
     res.status(200).json(handleSuccess());
   } catch (err) {
+    if (err instanceof ResourceNotFoundError) {
+      return res.status(401).json(handleFail(null, { message: err.message }));
+    }
+
+    if (err instanceof OtherError) {
+      return res.status(401).json(handleFail(null, { message: err.message }));
+    }
+
     const error = handleError(err);
     res.status(500).json(error);
   }
