@@ -9,7 +9,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ Store }) {
       // define association here
-      this.belongsTo(Store, { foreignKey: 'storeId', onDelete: 'cascade' });
+      this.belongsTo(Store, {
+        foreignKey: 'storeId',
+        onDelete: 'cascade',
+        as: 'store',
+      });
     }
   }
   Link.init(
@@ -55,12 +59,25 @@ module.exports = (sequelize, DataTypes) => {
           isInt: { msg: 'position must be an integer' },
           notNull: { msg: 'position must be an integer' },
           min: { args: 1, msg: 'oops! failed to change link position' },
+          isNumber(value) {
+            if (typeof value !== 'number') {
+              throw new Error('position must be an integer');
+            }
+          },
         },
       },
       isVisible: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true,
+        validate: {
+          notNull: { msg: 'isVisible must be boolean' },
+          isBoolean(value) {
+            if (typeof value !== 'boolean') {
+              throw new Error('isVisible must be boolean');
+            }
+          },
+        },
       },
     },
     {

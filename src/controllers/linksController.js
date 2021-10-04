@@ -2,13 +2,14 @@ const {
   Store,
   Link,
   sequelize,
-  Sequelize: { Op },
+  Sequelize: { Op, ValidationError },
 } = require('../models');
 const {
   handleSuccess,
   handleFail,
   handleError,
 } = require('../utils/handleJSON');
+const { AuthorizeError, ResourceNotFoundError } = require('../utils/error');
 
 module.exports.links_post = async (req, res) => {
   const userId = req.user.id;
@@ -32,6 +33,54 @@ module.exports.links_post = async (req, res) => {
         data[path] = message;
       });
 
+      return res.status(400).json(handleFail(err, data));
+    }
+
+    return res.status(500).json(handleError(err));
+  }
+};
+
+module.exports.links_put = async (req, res) => {
+  const userId = req.user.id;
+  const linkId = req.params.id;
+  const { title, href, isVisible } = req.body;
+  try {
+    const selectedLink = await Link.findOne({
+      where: { id: linkId },
+      include: 'store',
+    });
+
+    if (!selectedLink) throw new ResourceNotFoundError('link not found');
+    if (selectedLink.store.userId !== userId) throw new AuthorizeError();
+
+    selectedLink.title = title;
+    selectedLink.href = href;
+    selectedLink.isVisible = isVisible;
+    const updatedLink = await selectedLink.save();
+
+    const result = {
+      id: updatedLink.id,
+      title: updatedLink.title,
+      href: updatedLink.href,
+      position: updatedLink.position,
+      isVisible: updatedLink.isVisible,
+    };
+
+    return res.status(200).json(handleSuccess(result));
+  } catch (err) {
+    if (err instanceof ResourceNotFoundError) {
+      return res.status(404).json(handleFail(null, { message: err.message }));
+    }
+
+    if (err instanceof AuthorizeError) {
+      return res.status(401).json(handleFail(null, { message: err.message }));
+    }
+
+    if (err instanceof ValidationError) {
+      const data = {};
+      err.errors.forEach(({ path, message }) => {
+        data[path] = message;
+      });
       return res.status(400).json(handleFail(err, data));
     }
 
