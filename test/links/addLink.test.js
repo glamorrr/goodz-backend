@@ -1,4 +1,4 @@
-const appRequest = require('../../appRequest');
+const appRequest = require('../appRequest');
 
 describe('POST /links', () => {
   let authCookie;
