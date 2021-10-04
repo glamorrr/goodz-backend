@@ -76,7 +76,7 @@ describe('PUT /links/:id', () => {
   });
 
   test('should respond fail no resource found', async () => {
-    const notFoundLinkId = selectedLinkId.replace('a', 'b');
+    const notFoundLinkId = selectedLinkId.replace(/[a-zA-Z]/, 'b');
     const res = await appRequest
       .put(`/links/${notFoundLinkId}`)
       .send({
