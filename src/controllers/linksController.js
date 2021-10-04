@@ -15,12 +15,12 @@ module.exports.links_post = async (req, res) => {
   const userId = req.user.id;
   const { title, href } = req.body;
   try {
-    const store = await Store.findOne({ where: { userId } });
-    const totalLink = await store.countLinks();
+    const store = await Store.findOne({ where: { userId }, include: 'links' });
+    const totalLinks = store.links.length;
     const newLink = await store.createLink({
       title,
       href,
-      position: totalLink + 1,
+      position: totalLinks + 1,
     });
 
     return res

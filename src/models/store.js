@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate({ User, Link }) {
       // define association here
       this.belongsTo(User, { foreignKey: 'userId', onDelete: 'cascade' });
-      this.hasMany(Link, { foreignKey: 'storeId' });
+      this.hasMany(Link, { foreignKey: 'storeId', as: 'links' });
     }
 
     async isLinkPositionValid(position) {
