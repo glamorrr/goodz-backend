@@ -2,6 +2,7 @@ const appRequest = require('../../../appRequest');
 
 describe('PUT /links/:id/position', () => {
   let authCookie;
+  let authCookieOtherUser;
   let selectedLink;
 
   beforeAll(async () => {
@@ -9,6 +10,11 @@ describe('PUT /links/:id/position', () => {
       .post('/auth/login')
       .send({ email: 'mcdindonesia@gmail.com', password: 'mcdindonesia' });
     authCookie = resLogin.header['set-cookie'][0];
+
+    const resLogin2 = await appRequest
+      .post('/auth/login')
+      .send({ email: 'kfcindonesia@gmail.com', password: 'kfcindonesia' });
+    authCookieOtherUser = resLogin2.header['set-cookie'][0];
 
     await appRequest
       .post('/links')
@@ -80,6 +86,21 @@ describe('PUT /links/:id/position', () => {
     expect(res.body).toStrictEqual({
       status: 'fail',
       data: { message: 'unauthenticated' },
+    });
+  });
+
+  test("should respond fail unauthorized (user try update position another user's link)", async () => {
+    const res = await appRequest
+      .put(`/links/${selectedLink.id}/position`)
+      .send({
+        position: 2,
+      })
+      .set('cookie', authCookieOtherUser);
+
+    expect(res.status).toBe(404);
+    expect(res.body).toStrictEqual({
+      status: 'fail',
+      data: { message: 'link not found' },
     });
   });
 
