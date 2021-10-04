@@ -38,6 +38,11 @@ module.exports = (sequelize, DataTypes) => {
             args: [10, 50],
             msg: 'email must be 10 to 50 characters',
           },
+          isString(value) {
+            if (typeof value !== 'string') {
+              throw new Error('email must be a valid email address');
+            }
+          },
         },
       },
       hashedPassword: {
@@ -51,6 +56,11 @@ module.exports = (sequelize, DataTypes) => {
           len: {
             args: [8, 30],
             msg: 'password must be 8 to 30 characters',
+          },
+          isString(value) {
+            if (typeof value !== 'string') {
+              throw new Error('password must be string');
+            }
           },
         },
       },
