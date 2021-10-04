@@ -99,15 +99,15 @@ module.exports.links_position_put = async (req, res) => {
   try {
     const store = await Store.findOne({ where: { userId } });
 
-    const isPositionValid = await store.isLinkPositionValid(position);
-    if (!isPositionValid) {
-      throw new OtherError('oops! failed to change link position');
-    }
-
     const selectedLink = await Link.findOne({
       where: { id: linkId, storeId: store.id },
     });
     if (!selectedLink) throw new ResourceNotFoundError('link not found');
+
+    const isPositionValid = await store.isLinkPositionValid(position);
+    if (!isPositionValid) {
+      throw new OtherError('oops! failed to change link position');
+    }
 
     await sequelize.transaction(async (t) => {
       await Link.update(
@@ -137,11 +137,7 @@ module.exports.links_position_put = async (req, res) => {
     res.status(200).json(handleSuccess());
   } catch (err) {
     if (err instanceof OtherError) {
-      return res
-        .status(400)
-        .json(
-          handleFail(null, { message: 'oops! failed to change link position' })
-        );
+      return res.status(400).json(handleFail(null, { message: err.message }));
     }
 
     if (err instanceof ResourceNotFoundError) {
