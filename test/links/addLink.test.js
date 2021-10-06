@@ -61,7 +61,7 @@ describe('POST /links', () => {
     const res = await appRequest
       .post('/links')
       .send({
-        title: 'Third',
+        title: 'Third item',
         href: 'https://thirdone.com',
       })
       .set('cookie', authCookie);
@@ -70,11 +70,15 @@ describe('POST /links', () => {
     expect(res.body).toMatchObject({
       status: 'success',
       data: {
-        title: 'Third',
+        title: 'Third item',
         href: 'https://thirdone.com',
-        position: 3,
+        position: 1,
       },
     });
+
+    const resGet = await appRequest.get('/links').set('cookie', authCookie);
+    expect(resGet.status).toBe(200);
+    expect(resGet.body.data).toContainEqual(res.body.data);
   });
 
   test('should respond fail (send empty object)', async () => {

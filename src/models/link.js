@@ -55,6 +55,7 @@ module.exports = (sequelize, DataTypes) => {
       position: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 1,
         validate: {
           isInt: { msg: 'position must be an integer' },
           notNull: { msg: 'position must be an integer' },

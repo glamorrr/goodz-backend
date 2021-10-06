@@ -21,16 +21,23 @@ module.exports.links_post = async (req, res) => {
   try {
     const store = await Store.findOne({ where: { userId }, include: 'links' });
 
-    const totalLinks = store.links.length;
-    const newLink = await store.createLink({
-      title,
-      href,
-      position: totalLinks + 1,
+    const newLink = await sequelize.transaction(async (t) => {
+      await Link.update(
+        { position: sequelize.literal('position + 1') },
+        { where: { storeId: store.id }, transaction: t }
+      );
+      const newLink = await store.createLink(
+        { title, href },
+        { transaction: t }
+      );
+
+      return newLink;
     });
 
-    return res
-      .status(201)
-      .json(handleSuccess({ ...newLink.toJSON(), storeId: undefined }));
+    const linkResult = newLink.toJSON();
+    delete linkResult.storeId;
+
+    return res.status(201).json(handleSuccess(linkResult));
   } catch (err) {
     if (err instanceof ValidationError) {
       const data = {};
@@ -153,5 +160,20 @@ module.exports.links_position_put = async (req, res) => {
     }
 
     res.status(500).json(handleError(err));
+  }
+};
+
+module.exports.links_get = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const store = await Store.findOne({ where: { userId } });
+    const links = await store.getLinks({
+      order: ['position'],
+      attributes: { exclude: ['storeId'] },
+    });
+
+    return res.status(200).json(handleSuccess(links));
+  } catch (err) {
+    return res.status(500).json(handleError(err));
   }
 };
