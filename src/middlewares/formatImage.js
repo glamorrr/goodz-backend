@@ -13,7 +13,11 @@ const getFormattedDate = () => {
 };
 
 module.exports = async (req, res, next) => {
-  if (!req.file) return next();
+  if (!req.file) {
+    req.image = null;
+    return next();
+  }
+
   try {
     const optimizedImage = await sharp(req.file.buffer)
       .resize({ width: 400, height: 400 })
