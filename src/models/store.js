@@ -8,10 +8,11 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ User, Link }) {
+    static associate({ User, Link, Catalog }) {
       // define association here
       this.belongsTo(User, { foreignKey: 'userId', onDelete: 'cascade' });
       this.hasMany(Link, { foreignKey: 'storeId', as: 'links' });
+      this.hasMany(Catalog, { foreignKey: 'storeId', as: 'catalog' });
     }
 
     async isLinkPositionValid(position) {
@@ -52,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           is: {
-            args: /[a-zA-Z$@#.]/g,
+            args: /^[ a-zA-Z0-9$@#. ]+$/g,
             msg: 'name can only contain number, letter, @, #, $, and .',
           },
           notNull: { msg: 'name must be 3 to 25 characters' },
@@ -68,11 +69,6 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       isCredit: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-      },
-      isGofood: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
