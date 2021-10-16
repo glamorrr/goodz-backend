@@ -10,10 +10,10 @@ module.exports = (sequelize, DataTypes) => {
     static associate({ Store, Item }) {
       // define association here
       this.belongsTo(Store, { foreignKey: 'storeId', onDelete: 'cascade' });
-      this.belongsTo(Item, {
-        foreignKey: 'itemId',
-        onDelete: 'restrict',
+      this.hasOne(Item, {
+        foreignKey: 'catalogId',
         as: 'item',
+        onDelete: 'cascade',
       });
     }
   }
@@ -35,19 +35,6 @@ module.exports = (sequelize, DataTypes) => {
           isNumber(value) {
             if (typeof value !== 'number') {
               throw new Error('position must be an integer');
-            }
-          },
-        },
-      },
-      isVisible: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: true,
-        validate: {
-          notNull: { msg: 'isVisible must be boolean' },
-          isBoolean(value) {
-            if (typeof value !== 'boolean') {
-              throw new Error('isVisible must be boolean');
             }
           },
         },

@@ -14,10 +14,10 @@ module.exports.catalog_get = async (req, res) => {
           as: 'image',
           attributes: { exclude: ['userId'] },
         },
-        attributes: { exclude: ['imageId'] },
+        attributes: { exclude: ['imageId', 'catalogId'] },
       },
       order: ['position'],
-      attributes: { exclude: ['itemId'] },
+      attributes: { exclude: ['storeId'] },
     });
 
     return res.status(200).json(handleSuccess(catalog));
