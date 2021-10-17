@@ -140,8 +140,19 @@ module.exports.links_position_put = async (req, res) => {
           transaction: t,
         }
       );
-      selectedLink.position = position;
-      await selectedLink.save({ transaction: t });
+      const updatedLink = (
+        await Link.update(
+          { position },
+          {
+            where: { id: selectedLink.id, storeId: store.id },
+            returning: true,
+            plain: true,
+            transaction: t,
+          }
+        )
+      )[1];
+
+      if (!updatedLink) throw new OtherError('link not updated');
     });
 
     res.status(200).json(handleSuccess());
