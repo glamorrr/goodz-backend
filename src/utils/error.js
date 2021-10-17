@@ -1,6 +1,6 @@
 class AuthorizeError {
-  constructor() {
-    this.message = 'unauthorized';
+  constructor(message = 'unauthorized') {
+    this.message = message;
   }
 }
 

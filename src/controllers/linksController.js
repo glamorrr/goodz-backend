@@ -62,29 +62,32 @@ module.exports.links_put = async (req, res) => {
     });
 
     if (!selectedLink) throw new ResourceNotFoundError('link not found');
-    if (selectedLink.store.userId !== userId) throw new AuthorizeError();
+    if (selectedLink.store.userId !== userId) {
+      throw new AuthorizeError('link not found');
+    }
 
-    selectedLink.title = title;
-    selectedLink.href = href;
-    selectedLink.isVisible = isVisible;
-    const updatedLink = await selectedLink.save();
+    const updatedLink = (
+      await Link.update(
+        { title, href, isVisible },
+        {
+          where: { id: selectedLink.id },
+          returning: ['id', 'title', 'href', 'is_visible'],
+          plain: true,
+        }
+      )
+    )[1];
+    if (!updatedLink) throw new OtherError('link not updated');
 
-    const result = {
-      id: updatedLink.id,
-      title: updatedLink.title,
-      href: updatedLink.href,
-      position: updatedLink.position,
-      isVisible: updatedLink.isVisible,
-    };
+    const result = updatedLink;
 
     return res.status(200).json(handleSuccess(result));
   } catch (err) {
-    if (err instanceof ResourceNotFoundError) {
+    if (err instanceof ResourceNotFoundError || err instanceof AuthorizeError) {
       return res.status(404).json(handleFail(null, { message: err.message }));
     }
 
-    if (err instanceof AuthorizeError) {
-      return res.status(401).json(handleFail(null, { message: err.message }));
+    if (err instanceof OtherError) {
+      return res.status(400).json(handleFail(null, { message: err.message }));
     }
 
     if (err instanceof ValidationError) {
