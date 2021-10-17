@@ -109,6 +109,28 @@ describe('PUT /links/:id', () => {
         });
       });
 
+      describe('should respond fail no resource', () => {
+        test('send id that is not in database', async () => {
+          const fakeId = '78573999-361d-4983-a37f-f6846edcfbbf';
+          const res = await appRequest
+            .put(`/links/${fakeId}`)
+            .send({
+              title: 'update Link 1',
+              href: 'tryupdatelink1.com',
+              isVisible: false,
+            })
+            .set('cookie', authCookie1);
+
+          expect(res.status).toBe(404);
+          expect(res.body).toStrictEqual({
+            status: 'fail',
+            data: {
+              message: 'link not found',
+            },
+          });
+        });
+      });
+
       describe('should respond fail', () => {
         test('send {}', async () => {
           const res = await appRequest
