@@ -1,5 +1,5 @@
 const randomstring = require('randomstring');
-const appRequest = require('../appRequest');
+const appRequest = require('../../appRequest');
 
 describe('PUT /items/:id', () => {
   describe('ALL PROPERTIES', () => {
