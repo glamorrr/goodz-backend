@@ -1,7 +1,6 @@
 const randomstring = require('randomstring');
 const appRequest = require('../../appRequest');
 
-const charset = 'aA@#$.';
 const defaultResponseData = {
   name: 'name must be 3 to 25 characters',
 };
@@ -9,7 +8,7 @@ const defaultResponseData = {
 const testData = [
   {
     message: 'should respond success created 3 chars',
-    data: { name: randomstring.generate({ length: 3, charset }) },
+    data: { name: randomstring.generate({ length: 3 }) },
     expected: {
       status: 201,
       body: {
@@ -20,7 +19,7 @@ const testData = [
   },
   {
     message: 'should respond success created 25 chars',
-    data: { name: randomstring.generate({ length: 25, charset }) },
+    data: { name: randomstring.generate({ length: 25 }) },
     expected: {
       status: 201,
       body: {
@@ -53,7 +52,7 @@ const testData = [
   },
   {
     message: 'should respond name must not too long',
-    data: { name: randomstring.generate({ length: 26, charset }) },
+    data: { name: randomstring.generate({ length: 26 }) },
     expected: {
       status: 400,
       body: {
@@ -64,7 +63,7 @@ const testData = [
   },
   {
     message: 'should respond name must not too short',
-    data: { name: randomstring.generate({ length: 2, charset }) },
+    data: { name: randomstring.generate({ length: 2 }) },
     expected: {
       status: 400,
       body: {

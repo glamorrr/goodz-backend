@@ -52,10 +52,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(25),
         allowNull: false,
         validate: {
-          is: {
-            args: /^[ a-zA-Z0-9$@#. ]+$/g,
-            msg: 'name can only contain number, letter, @, #, $, and .',
-          },
           notNull: { msg: 'name must be 3 to 25 characters' },
           len: {
             args: [3, 25],
