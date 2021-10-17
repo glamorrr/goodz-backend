@@ -8,3 +8,5 @@ src/migrations
 uploads
 
 *.sql
+
+jest_html_reporters.html
