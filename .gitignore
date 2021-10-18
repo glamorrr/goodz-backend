@@ -6,6 +6,7 @@ src/migrations
 .env.production
 
 uploads
+uploads_test
 
 *.sql
 
