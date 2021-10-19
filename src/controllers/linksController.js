@@ -107,7 +107,6 @@ module.exports.links_position_put = async (req, res) => {
   const linkId = req.params.id;
   const { position } = req.body;
   try {
-    // TODO: can use one query?
     const store = await Store.findOne({ where: { userId } });
 
     const selectedLink = await Link.findOne({
@@ -181,14 +180,18 @@ module.exports.links_position_put = async (req, res) => {
 module.exports.links_get = async (req, res) => {
   const userId = req.user.id;
   try {
-    // TODO: can use one query?
-    const store = await Store.findOne({ where: { userId } });
-    const links = await store.getLinks({
-      order: ['position'],
+    const links1 = await Link.findAll({
       attributes: { exclude: ['storeId'] },
+      order: ['position'],
+      include: {
+        model: Store,
+        as: 'store',
+        where: { userId },
+        attributes: [],
+      },
     });
 
-    return res.status(200).json(handleSuccess(links));
+    return res.status(200).json(handleSuccess({ links, links1 }));
   } catch (err) {
     return res.status(500).json(handleError(err));
   }
