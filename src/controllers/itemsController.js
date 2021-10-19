@@ -4,7 +4,7 @@ const {
   Catalog,
   Image,
   sequelize,
-  Sequelize: { ValidationError },
+  Sequelize: { ValidationError, Op },
 } = require('../models');
 const { ResourceNotFoundError, OtherError } = require('../utils/error');
 const {
@@ -203,6 +203,70 @@ module.exports.items_image_post = async (req, res) => {
 
     if (err instanceof OtherError) {
       return res.status(400).json(handleFail(null, { message: err.message }));
+    }
+
+    return res.status(500).json(handleError(err));
+  }
+};
+
+module.exports.items_delete = async (req, res) => {
+  const userId = req.user.id;
+  const itemId = req.params.id;
+
+  try {
+    const selectedCatalog = await Catalog.findOne({
+      include: [
+        { model: Store, as: 'store', where: { userId } },
+        {
+          model: Item,
+          as: 'item',
+          where: { id: itemId },
+          include: {
+            model: Image,
+            as: 'image',
+          },
+        },
+      ],
+    });
+    if (!selectedCatalog) throw new ResourceNotFoundError('item not found');
+
+    const result = await sequelize.transaction(async (t) => {
+      const imageInItem = selectedCatalog.item.image;
+      if (imageInItem) {
+        const selectedImage = await Image.findOne({
+          where: { id: imageInItem.id },
+          transaction: t,
+        });
+
+        await deleteImage(selectedImage.path);
+        await selectedImage.destroy({ transaction: t });
+      }
+
+      await Catalog.update(
+        { position: sequelize.literal('position - 1') },
+        {
+          where: {
+            storeId: selectedCatalog.storeId,
+            position: { [Op.gt]: selectedCatalog.position },
+          },
+          transaction: t,
+        }
+      );
+
+      await selectedCatalog.destroy({ transaction: t });
+
+      return {
+        id: selectedCatalog.item.id,
+        name: selectedCatalog.item.name,
+        price: selectedCatalog.item.price,
+        imageId: selectedCatalog.item.imageId,
+      };
+    });
+
+    return res.status(200).json(handleSuccess(result));
+  } catch (err) {
+    if (err instanceof ResourceNotFoundError) {
+      return res.status(404).json(handleFail(null, { message: err.message }));
     }
 
     return res.status(500).json(handleError(err));

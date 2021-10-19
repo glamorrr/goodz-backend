@@ -7,6 +7,7 @@ const router = Router();
 
 router.post('/', itemsController.items_post);
 router.put('/:id', itemsController.items_put);
+router.delete('/:id', itemsController.items_delete);
 router.post(
   '/:id/image',
   [uploadImage, formatImage({ width: 400, height: 400 })],
