@@ -9,7 +9,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ Store, Item }) {
       // define association here
-      this.belongsTo(Store, { foreignKey: 'storeId', onDelete: 'cascade' });
+      this.belongsTo(Store, {
+        foreignKey: 'storeId',
+        onDelete: 'cascade',
+        as: 'store',
+      });
       this.hasOne(Item, {
         foreignKey: 'catalogId',
         as: 'item',
