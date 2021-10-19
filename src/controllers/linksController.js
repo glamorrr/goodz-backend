@@ -107,6 +107,7 @@ module.exports.links_position_put = async (req, res) => {
   const linkId = req.params.id;
   const { position } = req.body;
   try {
+    // TODO: can use one query?
     const store = await Store.findOne({ where: { userId } });
 
     const selectedLink = await Link.findOne({
@@ -180,6 +181,7 @@ module.exports.links_position_put = async (req, res) => {
 module.exports.links_get = async (req, res) => {
   const userId = req.user.id;
   try {
+    // TODO: can use one query?
     const store = await Store.findOne({ where: { userId } });
     const links = await store.getLinks({
       order: ['position'],
@@ -188,6 +190,44 @@ module.exports.links_get = async (req, res) => {
 
     return res.status(200).json(handleSuccess(links));
   } catch (err) {
+    return res.status(500).json(handleError(err));
+  }
+};
+
+module.exports.links_delete = async (req, res) => {
+  const userId = req.user.id;
+  const linkId = req.params.id;
+
+  try {
+    const selectedLink = await Link.findOne({
+      where: { id: linkId },
+      include: { model: Store, as: 'store', where: { userId }, attributes: [] },
+    });
+    if (!selectedLink) throw new ResourceNotFoundError('link not found');
+
+    await sequelize.transaction(async (t) => {
+      await Link.update(
+        { position: sequelize.literal('position - 1') },
+        {
+          where: {
+            storeId: selectedLink.storeId,
+            position: { [Op.gt]: selectedLink.position },
+          },
+          transaction: t,
+        }
+      );
+      await selectedLink.destroy({ transaction: t });
+    });
+
+    const deletedLink = selectedLink.toJSON();
+    delete deletedLink.storeId;
+
+    return res.status(200).json(handleSuccess(deletedLink));
+  } catch (err) {
+    if (err instanceof ResourceNotFoundError) {
+      return res.status(404).json(handleFail(null, { message: err.message }));
+    }
+
     return res.status(500).json(handleError(err));
   }
 };
