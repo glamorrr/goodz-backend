@@ -180,7 +180,7 @@ module.exports.links_position_put = async (req, res) => {
 module.exports.links_get = async (req, res) => {
   const userId = req.user.id;
   try {
-    const links1 = await Link.findAll({
+    const links = await Link.findAll({
       attributes: { exclude: ['storeId'] },
       order: ['position'],
       include: {
@@ -191,7 +191,7 @@ module.exports.links_get = async (req, res) => {
       },
     });
 
-    return res.status(200).json(handleSuccess({ links, links1 }));
+    return res.status(200).json(handleSuccess(links));
   } catch (err) {
     return res.status(500).json(handleError(err));
   }
