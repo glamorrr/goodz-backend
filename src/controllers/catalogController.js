@@ -1,4 +1,4 @@
-const { Store, Catalog, Item, Image } = require('../models');
+const { Store, Catalog, Item, Header, Image } = require('../models');
 const { handleSuccess, handleError } = require('../utils/handleJSON');
 
 module.exports.catalog_get = async (req, res) => {
@@ -16,6 +16,11 @@ module.exports.catalog_get = async (req, res) => {
             attributes: { exclude: ['userId'] },
           },
           attributes: { exclude: ['imageId', 'catalogId'] },
+        },
+        {
+          model: Header,
+          as: 'header',
+          attributes: { exclude: ['catalogId'] },
         },
       ],
       order: ['position'],
