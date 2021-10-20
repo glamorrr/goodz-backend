@@ -83,3 +83,8 @@ module.exports.login_post = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
+module.exports.logout_post = (req, res) => {
+  res.setHeader('Set-Cookie', cookie.serialize('token', '', { maxAge: 1 }));
+  res.status(200).json(handleSuccess());
+};
