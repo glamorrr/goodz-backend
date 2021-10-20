@@ -7,6 +7,7 @@ const linksRoute = require('./routes/linksRoute');
 const itemsRoute = require('./routes/itemsRoute');
 const catalogRoute = require('./routes/catalogRoute');
 const imagesRoute = require('./routes/imagesRoute');
+const headerRoute = require('./routes/headerRoute');
 const verifyAuth = require('./middlewares/verifyAuth');
 
 const app = express();
@@ -21,5 +22,6 @@ app.use('/links', verifyAuth, linksRoute);
 app.use('/items', verifyAuth, itemsRoute);
 app.use('/catalog', verifyAuth, catalogRoute);
 app.use('/images', verifyAuth, imagesRoute);
+app.use('/header', verifyAuth, headerRoute);
 
 module.exports = app;
