@@ -3,7 +3,7 @@ const {
   Catalog,
   sequelize,
   Header,
-  Sequelize: { ValidationError },
+  Sequelize: { ValidationError, Op },
 } = require('../models');
 const { ResourceNotFoundError, OtherError } = require('../utils/error');
 const {
@@ -113,6 +113,53 @@ module.exports.header_put = async (req, res) => {
         data[path] = message;
       });
       return res.status(400).json(handleFail(err, data));
+    }
+
+    return res.status(500).json(handleError(err));
+  }
+};
+
+module.exports.header_delete = async (req, res) => {
+  const userId = req.user.id;
+  const headerId = req.params.id;
+
+  try {
+    const selectedCatalog = await Catalog.findOne({
+      include: [
+        { model: Store, as: 'store', where: { userId } },
+        {
+          model: Header,
+          as: 'header',
+          where: { id: headerId },
+        },
+      ],
+    });
+    if (!selectedCatalog) throw new ResourceNotFoundError('header not found');
+
+    const result = await sequelize.transaction(async (t) => {
+      await Catalog.update(
+        { position: sequelize.literal('position - 1') },
+        {
+          where: {
+            storeId: selectedCatalog.storeId,
+            position: { [Op.gt]: selectedCatalog.position },
+          },
+          transaction: t,
+        }
+      );
+
+      await selectedCatalog.destroy({ transaction: t });
+
+      return {
+        id: selectedCatalog.header.id,
+        title: selectedCatalog.header.title,
+      };
+    });
+
+    return res.status(200).json(handleSuccess(result));
+  } catch (err) {
+    if (err instanceof ResourceNotFoundError) {
+      return res.status(404).json(handleFail(null, { message: err.message }));
     }
 
     return res.status(500).json(handleError(err));
