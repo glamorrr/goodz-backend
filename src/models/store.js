@@ -21,6 +21,13 @@ module.exports = (sequelize, DataTypes) => {
         Number.isInteger(position) && position >= 1 && position <= totalLinks;
       return isValid;
     }
+
+    async isCatalogPositionValid(position) {
+      const totalCatalog = await this.countCatalog();
+      const isValid =
+        Number.isInteger(position) && position >= 1 && position <= totalCatalog;
+      return isValid;
+    }
   }
   Store.init(
     {
