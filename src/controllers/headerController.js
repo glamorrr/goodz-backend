@@ -5,6 +5,7 @@ const {
   Header,
   Sequelize: { ValidationError },
 } = require('../models');
+const { ResourceNotFoundError, OtherError } = require('../utils/error');
 const {
   handleSuccess,
   handleFail,
@@ -46,6 +47,66 @@ module.exports.header_post = async (req, res) => {
 
     return res.status(201).json(handleSuccess(result));
   } catch (err) {
+    if (err instanceof ValidationError) {
+      const data = {};
+      err.errors.forEach(({ path, message }) => {
+        data[path] = message;
+      });
+      return res.status(400).json(handleFail(err, data));
+    }
+
+    return res.status(500).json(handleError(err));
+  }
+};
+
+module.exports.header_put = async (req, res) => {
+  const userId = req.user.id;
+  const headerId = req.params.id;
+  const { title, isVisible } = req.body;
+
+  try {
+    const store = await Store.findOne({
+      where: { userId },
+      include: {
+        model: Catalog,
+        as: 'catalog',
+        include: {
+          model: Header,
+          as: 'header',
+          attributes: ['id'],
+        },
+        attributes: ['id'],
+      },
+      attributes: ['id'],
+    });
+
+    const isUserHasHeader = store.catalog.find(
+      (catalog) => catalog.header?.id === headerId
+    );
+    if (!isUserHasHeader) throw new ResourceNotFoundError('header not found');
+
+    const updatedHeader = (
+      await Header.update(
+        { title, isVisible },
+        {
+          where: { id: headerId },
+          returning: ['id', 'title', 'is_visible'],
+          plain: true,
+        }
+      )
+    )[1];
+    if (!updatedHeader) throw new OtherError('header not updated');
+
+    return res.status(200).json(handleSuccess(updatedHeader));
+  } catch (err) {
+    if (err instanceof ResourceNotFoundError) {
+      return res.status(404).json(handleFail(null, { message: err.message }));
+    }
+
+    if (err instanceof OtherError) {
+      return res.status(400).json(handleFail(null, { message: err.message }));
+    }
+
     if (err instanceof ValidationError) {
       const data = {};
       err.errors.forEach(({ path, message }) => {
