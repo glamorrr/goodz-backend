@@ -75,6 +75,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
+        validate: {
+          notNull: { msg: 'isCredit must be boolean' },
+          isBoolean(value) {
+            if (typeof value !== 'boolean') {
+              throw new Error('isCredit must be boolean');
+            }
+          },
+        },
       },
       description: {
         type: DataTypes.STRING(255),
