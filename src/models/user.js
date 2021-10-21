@@ -59,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
           },
           isString(value) {
             if (typeof value !== 'string') {
-              throw new Error('password must be string');
+              throw new Error('password must be 8 to 30 characters');
             }
           },
         },

@@ -15,16 +15,27 @@ const { createToken, JWT_MAX_AGE } = require('../utils/jwt');
 
 module.exports.signup_post = async (req, res) => {
   const { email, password, name, url } = req.body;
+
   try {
-    await sequelize.transaction(async (t) => {
+    const result = await sequelize.transaction(async (t) => {
       const newUser = await User.create(
         { email, password },
         { transaction: t }
       );
-      await Store.create({ name, url, userId: newUser.id }, { transaction: t });
+      const newStore = await Store.create(
+        { name, url, userId: newUser.id },
+        { transaction: t }
+      );
+
+      return {
+        id: newStore.id,
+        name: newStore.name,
+        url: newStore.url,
+        user: { email: newUser.email },
+      };
     });
 
-    return res.status(201).json(handleSuccess());
+    return res.status(201).json(handleSuccess(result));
   } catch (err) {
     if (err instanceof UniqueConstraintError) {
       const { path } = err.errors[0];
