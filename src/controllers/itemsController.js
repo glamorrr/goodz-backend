@@ -185,14 +185,10 @@ module.exports.items_image_post = async (req, res) => {
       )[1];
       if (!updatedItem) throw new OtherError('item not updated');
 
-      const updatedItemResult = updatedItem.toJSON();
-      delete updatedItemResult.catalogId;
-      delete updatedItemResult.imageId;
-
       const newImageResult = newImage.toJSON();
       delete newImageResult.userId;
 
-      return { ...updatedItemResult, image: newImageResult };
+      return { id: updatedItem.id, image: newImageResult };
     });
 
     return res.status(200).json(handleSuccess(result));

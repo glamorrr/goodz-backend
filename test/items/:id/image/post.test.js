@@ -1,5 +1,4 @@
 const path = require('path');
-const randomstring = require('randomstring');
 const appRequest = require('../../../appRequest');
 
 const assetPath = path.join(__dirname, '../../../assets');
@@ -93,10 +92,7 @@ describe('POST /items/:id/image', () => {
           expect(res.body).toStrictEqual({
             status: 'success',
             data: {
-              id: expect.any(String),
-              name,
-              price,
-              isVisible: true,
+              id: user1Item.id,
               image: {
                 id: expect.any(String),
                 path: expect.any(String),
@@ -148,7 +144,7 @@ describe('POST /items/:id/image', () => {
     const name = 'Spicy ICe Cream';
     const price = 69000;
     let authCookie;
-    let user1Item;
+    let selectedItem;
 
     beforeAll(async () => {
       const email = 'postitemidimageimageproperty@gmail.com';
@@ -185,10 +181,7 @@ describe('POST /items/:id/image', () => {
         expect(res.body).toStrictEqual({
           status: 'success',
           data: {
-            id: expect.any(String),
-            name,
-            price,
-            isVisible: true,
+            id: selectedItem.id,
             image: {
               id: expect.any(String),
               path: expect.any(String),
@@ -209,10 +202,7 @@ describe('POST /items/:id/image', () => {
         expect(res.body).toStrictEqual({
           status: 'success',
           data: {
-            id: expect.any(String),
-            name,
-            price,
-            isVisible: true,
+            id: selectedItem.id,
             image: {
               id: expect.any(String),
               path: expect.any(String),
@@ -233,10 +223,7 @@ describe('POST /items/:id/image', () => {
         expect(res.body).toStrictEqual({
           status: 'success',
           data: {
-            id: expect.any(String),
-            name,
-            price,
-            isVisible: true,
+            id: selectedItem.id,
             image: {
               id: expect.any(String),
               path: expect.any(String),
