@@ -85,8 +85,34 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       description: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.STRING(100),
         defaultValue: null,
+        validate: {
+          len: {
+            args: [3, 100],
+            msg: 'description must be 3 to 100 characters',
+          },
+          isString(value) {
+            if (typeof value !== 'string') {
+              throw new Error('description must be 3 to 100 characters');
+            }
+          },
+        },
+      },
+      location: {
+        type: DataTypes.STRING(100),
+        defaultValue: null,
+        validate: {
+          len: {
+            args: [3, 100],
+            msg: 'location must be 3 to 100 characters',
+          },
+          isString(value) {
+            if (typeof value !== 'string') {
+              throw new Error('location must be 3 to 100 characters');
+            }
+          },
+        },
       },
       currencyCode: {
         type: DataTypes.STRING(2),
