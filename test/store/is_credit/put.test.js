@@ -1,6 +1,6 @@
 const appRequest = require('../../appRequest');
 
-describe('PUT /store/:id/is_credit', () => {
+describe('PUT /store/is_credit', () => {
   describe('ALL PROPERTIES', () => {
     let authCookie1;
 
