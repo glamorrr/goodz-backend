@@ -5,6 +5,7 @@ const uploadImage = require('../middlewares/uploadImage');
 
 const router = Router();
 
+router.get('/', storeController.store_get);
 router.put('/profile', storeController.store_profile_put);
 router.put('/is_credit', storeController.store_is_credit_put);
 router.put('/url', storeController.store_url_put);

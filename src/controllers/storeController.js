@@ -12,6 +12,33 @@ const {
 } = require('../utils/handleJSON');
 const { deleteImage, uploadImage } = require('../utils/image');
 
+module.exports.store_get = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const store = await Store.findOne({
+      where: { userId },
+      include: [
+        {
+          model: Image,
+          as: 'image',
+          attributes: { exclude: ['userId'] },
+        },
+        {
+          model: Image,
+          as: 'background',
+          attributes: { exclude: ['userId'] },
+        },
+      ],
+      attributes: { exclude: ['userId', 'imageId', 'backgroundId'] },
+    });
+
+    return res.status(200).json(handleSuccess(store));
+  } catch (err) {
+    return res.status(500).json(handleError(err));
+  }
+};
+
 module.exports.store_profile_put = async (req, res) => {
   const userId = req.user.id;
   const { name, description, location } = req.body;
