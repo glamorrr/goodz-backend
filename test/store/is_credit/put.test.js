@@ -1,4 +1,4 @@
-const appRequest = require('../../../appRequest');
+const appRequest = require('../../appRequest');
 
 describe('PUT /store/:id/is_credit', () => {
   describe('ALL PROPERTIES', () => {
