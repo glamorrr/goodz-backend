@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(User, { foreignKey: 'userId', onDelete: 'cascade' });
       this.hasOne(Item, { foreignKey: 'imageId', onDelete: 'set null' });
       this.hasOne(Store, { foreignKey: 'imageId', onDelete: 'set null' });
+      this.hasOne(Store, { foreignKey: 'backgroundId', onDelete: 'set null' });
     }
   }
   Image.init(

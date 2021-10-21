@@ -94,7 +94,10 @@ describe('DELETE /items/:id', () => {
       .attach('image', path.join(assetPath, '3MB.jpg'))
       .set('cookie', authCookie1);
 
-    selectedItemWithImage = resPutImage.body.data;
+    selectedItemWithImage = {
+      ...selectedItemWithImage,
+      image: resPutImage.body.data.image,
+    };
   });
 
   describe('unauthenticated, should respond fail', () => {

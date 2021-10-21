@@ -11,5 +11,10 @@ router.post(
   [uploadImage, formatImage({ width: 160, height: 160 })],
   storeController.store_image_post
 );
+router.post(
+  '/background',
+  [uploadImage, formatImage({ width: 1440, height: 450 })],
+  storeController.store_background_post
+);
 
 module.exports = router;
