@@ -89,6 +89,41 @@ module.exports.store_url_put = async (req, res) => {
   }
 };
 
+module.exports.store_currency_put = async (req, res) => {
+  const userId = req.user.id;
+  const { currencyCode } = req.body;
+
+  try {
+    const updatedStore = (
+      await Store.update(
+        { currencyCode },
+        {
+          where: { userId },
+          returning: ['currency_code'],
+          plain: true,
+        }
+      )
+    )[1];
+    if (!updatedStore) throw new OtherError('currency code not updated');
+
+    res.status(200).json(handleSuccess(updatedStore));
+  } catch (err) {
+    if (err instanceof ValidationError) {
+      const data = {};
+      err.errors.forEach(({ path, message }) => {
+        data[path] = message;
+      });
+      return res.status(400).json(handleFail(err, data));
+    }
+
+    if (err instanceof OtherError) {
+      return res.status(400).json(handleFail(null, { message: err.message }));
+    }
+
+    return res.status(500).json(handleError(err));
+  }
+};
+
 module.exports.store_image_post = async (req, res) => {
   const userId = req.user.id;
   const { image } = req;

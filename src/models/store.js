@@ -1,6 +1,6 @@
 'use strict';
 const { Model } = require('sequelize');
-const user = require('./user');
+const currency = require('../utils/currency');
 module.exports = (sequelize, DataTypes) => {
   class Store extends Model {
     /**
@@ -87,6 +87,18 @@ module.exports = (sequelize, DataTypes) => {
       description: {
         type: DataTypes.STRING(255),
         defaultValue: null,
+      },
+      currencyCode: {
+        type: DataTypes.STRING(2),
+        defaultValue: 'ID',
+        allowNull: false,
+        validate: {
+          notNull: { msg: 'currency code is not valid' },
+          isIn: {
+            args: [Object.keys(currency)],
+            msg: 'currency code is not valid',
+          },
+        },
       },
     },
     {
