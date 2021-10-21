@@ -2,7 +2,7 @@ const {
   Store,
   Image,
   sequelize,
-  Sequelize: { ValidationError },
+  Sequelize: { ValidationError, UniqueConstraintError },
 } = require('../models');
 const { OtherError, ResourceNotFoundError } = require('../utils/error');
 const {
@@ -44,6 +44,48 @@ module.exports.store_is_credit_put = async (req, res) => {
     }
 
     res.status(500).json(handleError(err));
+  }
+};
+
+module.exports.store_url_put = async (req, res) => {
+  const userId = req.user.id;
+  const { url } = req.body;
+
+  try {
+    const updatedStore = (
+      await Store.update(
+        { url },
+        {
+          where: { userId },
+          returning: ['url'],
+          plain: true,
+        }
+      )
+    )[1];
+    if (!updatedStore) throw new OtherError('url not updated');
+
+    res.status(200).json(handleSuccess(updatedStore));
+  } catch (err) {
+    if (err instanceof UniqueConstraintError) {
+      const { path } = err.errors[0];
+      return res
+        .status(400)
+        .json(handleFail(err, { [path]: 'url has already been taken' }));
+    }
+
+    if (err instanceof ValidationError) {
+      const data = {};
+      err.errors.forEach(({ path, message }) => {
+        data[path] = message;
+      });
+      return res.status(400).json(handleFail(err, data));
+    }
+
+    if (err instanceof OtherError) {
+      return res.status(400).json(handleFail(null, { message: err.message }));
+    }
+
+    return res.status(500).json(handleError(err));
   }
 };
 
