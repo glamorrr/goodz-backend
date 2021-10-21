@@ -51,7 +51,6 @@ describe('PUT /catalog/:id/position', () => {
       .set('cookie', authCookie);
 
     selectedCatalog = resCatalog5.body.data;
-    console.log('beforeall');
   });
 
   describe('unauthenticated', () => {
@@ -61,7 +60,6 @@ describe('PUT /catalog/:id/position', () => {
         .send({
           position: 4,
         });
-      console.log('unauth');
 
       expect(res.status).toBe(401);
       expect(res.body).toStrictEqual({
@@ -101,7 +99,6 @@ describe('PUT /catalog/:id/position', () => {
             position: 4,
           })
           .set('cookie', authCookie);
-        console.log('sendvalid');
 
         expect(res.status).toBe(200);
         expect(res.body).toStrictEqual({
