@@ -9,17 +9,15 @@ const {
   handleFail,
   handleError,
 } = require('../utils/handleJSON');
-const {
-  AuthorizeError,
-  ResourceNotFoundError,
-  OtherError,
-} = require('../utils/error');
+const { ResourceNotFoundError, OtherError } = require('../utils/error');
 
 module.exports.links_post = async (req, res) => {
   const userId = req.user.id;
   const { title, href } = req.body;
   try {
     const store = await Store.findOne({ where: { userId }, include: 'links' });
+
+    if (!store) throw new ResourceNotFoundError('store not found');
 
     const newLink = await sequelize.transaction(async (t) => {
       await Link.update(
@@ -39,6 +37,10 @@ module.exports.links_post = async (req, res) => {
 
     return res.status(201).json(handleSuccess(linkResult));
   } catch (err) {
+    if (err instanceof ResourceNotFoundError) {
+      return res.status(404).json(handleFail(null, { message: err.message }));
+    }
+
     if (err instanceof ValidationError) {
       const data = {};
       err.errors.forEach(({ path, message }) => {
@@ -58,13 +60,14 @@ module.exports.links_put = async (req, res) => {
   try {
     const selectedLink = await Link.findOne({
       where: { id: linkId },
-      include: 'store',
+      include: {
+        model: Store,
+        as: 'store',
+        where: { userId },
+      },
     });
 
     if (!selectedLink) throw new ResourceNotFoundError('link not found');
-    if (selectedLink.store.userId !== userId) {
-      throw new AuthorizeError('link not found');
-    }
 
     const updatedLink = (
       await Link.update(
@@ -82,7 +85,7 @@ module.exports.links_put = async (req, res) => {
 
     return res.status(200).json(handleSuccess(result));
   } catch (err) {
-    if (err instanceof ResourceNotFoundError || err instanceof AuthorizeError) {
+    if (err instanceof ResourceNotFoundError) {
       return res.status(404).json(handleFail(null, { message: err.message }));
     }
 
@@ -106,8 +109,10 @@ module.exports.links_position_put = async (req, res) => {
   const userId = req.user.id;
   const linkId = req.params.id;
   const { position } = req.body;
+
   try {
     const store = await Store.findOne({ where: { userId } });
+    if (!store) throw new ResourceNotFoundError('link not found');
 
     const selectedLink = await Link.findOne({
       where: { id: linkId, storeId: store.id },

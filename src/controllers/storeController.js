@@ -195,6 +195,8 @@ module.exports.store_image_post = async (req, res) => {
 
     const store = await Store.findOne({ where: { userId } });
 
+    if (!store) throw new ResourceNotFoundError('store not found');
+
     const result = await sequelize.transaction(async (t) => {
       const isImageInStore = store.imageId;
       if (isImageInStore) {
@@ -262,6 +264,8 @@ module.exports.store_background_post = async (req, res) => {
     if (!image) throw new OtherError('please insert an image');
 
     const store = await Store.findOne({ where: { userId } });
+
+    if (!store) throw new ResourceNotFoundError('store not found');
 
     const result = await sequelize.transaction(async (t) => {
       const isImageInStore = store.backgroundId;

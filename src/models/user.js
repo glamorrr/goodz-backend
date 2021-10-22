@@ -10,13 +10,17 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Store }) {
+    static associate({ Store, Image }) {
       // define association here
       this.hasOne(Store, { foreignKey: 'userId' });
+      this.hasMany(Image, { foreignKey: 'userId', as: 'images' });
     }
 
     async isPasswordValid(plainTextPassword) {
-      return await bcrypt.compare(plainTextPassword, this.hashedPassword);
+      return (
+        typeof plainTextPassword === 'string' &&
+        (await bcrypt.compare(plainTextPassword, this.hashedPassword))
+      );
     }
   }
   User.init(

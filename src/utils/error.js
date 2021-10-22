@@ -1,9 +1,3 @@
-class AuthorizeError {
-  constructor(message = 'unauthorized') {
-    this.message = message;
-  }
-}
-
 class ResourceNotFoundError {
   constructor(message = null) {
     this.message = message;
@@ -17,7 +11,6 @@ class OtherError {
 }
 
 module.exports = {
-  AuthorizeError,
   ResourceNotFoundError,
   OtherError,
 };

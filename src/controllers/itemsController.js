@@ -19,6 +19,9 @@ module.exports.items_post = async (req, res) => {
   const { name, price } = req.body;
   try {
     const store = await Store.findOne({ where: { userId } });
+
+    if (!store) throw new ResourceNotFoundError('store not found');
+
     const result = await sequelize.transaction(async (t) => {
       await Catalog.update(
         { position: sequelize.literal('position + 1') },
@@ -48,6 +51,10 @@ module.exports.items_post = async (req, res) => {
 
     return res.status(201).json(handleSuccess(result));
   } catch (err) {
+    if (err instanceof ResourceNotFoundError) {
+      return res.status(404).json(handleFail(null, { message: err.message }));
+    }
+
     if (err instanceof ValidationError) {
       const data = {};
       err.errors.forEach(({ path, message }) => {
@@ -80,7 +87,7 @@ module.exports.items_put = async (req, res) => {
       attributes: ['id'],
     });
 
-    const isUserHasItem = store.catalog.find(
+    const isUserHasItem = store?.catalog?.find(
       (catalog) => catalog.item?.id === itemId
     );
     if (!isUserHasItem) throw new ResourceNotFoundError('item not found');

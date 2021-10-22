@@ -1,5 +1,10 @@
 const { Store, Image, Item, Header } = require('../models');
-const { handleSuccess, handleError } = require('../utils/handleJSON');
+const { ResourceNotFoundError } = require('../utils/error');
+const {
+  handleSuccess,
+  handleError,
+  handleFail,
+} = require('../utils/handleJSON');
 
 module.exports.url_get = async (req, res) => {
   const { url } = req.params;
@@ -21,6 +26,8 @@ module.exports.url_get = async (req, res) => {
       ],
       attributes: { exclude: ['userId', 'imageId', 'backgroundId'] },
     });
+
+    if (!store) throw new ResourceNotFoundError('url not found');
 
     const links = await store.getLinks({
       order: ['position'],
@@ -53,6 +60,10 @@ module.exports.url_get = async (req, res) => {
       .status(200)
       .json(handleSuccess({ ...store.toJSON(), links, catalog }));
   } catch (err) {
+    if (err instanceof ResourceNotFoundError) {
+      return res.status(404).json(handleFail(null, { message: err.message }));
+    }
+
     return res.status(500).json(handleError(err));
   }
 };

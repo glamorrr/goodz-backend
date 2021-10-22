@@ -54,6 +54,8 @@ module.exports.catalog_position_put = async (req, res) => {
   try {
     const store = await Store.findOne({ where: { userId } });
 
+    if (!store) throw new ResourceNotFoundError('catalog not found');
+
     const selectedCatalog = await Catalog.findOne({
       where: { id: catalogId, storeId: store.id },
     });
