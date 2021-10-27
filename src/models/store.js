@@ -139,6 +139,14 @@ module.exports = (sequelize, DataTypes) => {
           if (typeof store.name === 'string') {
             store.name = store.name = store.name.trim();
           }
+
+          if (typeof store.description === 'string') {
+            store.description = store.description.trim();
+          }
+
+          if (typeof store.location === 'string') {
+            store.location = store.location.trim();
+          }
         },
       },
       sequelize,

@@ -92,21 +92,31 @@ describe('PUT /store/profile', () => {
     describe('should respond success', () => {
       const name = 'Best Store';
       const location = 'Old Town Road';
+      const charsLength3 = randomstring.generate(3);
+      const charsLength100 = randomstring.generate(100);
 
       test.each([
         {
           testName: 'send 3 chars',
-          description: randomstring.generate(3),
+          description: charsLength3,
+          expectDescription: charsLength3,
         },
         {
           testName: 'send 100 chars',
-          description: randomstring.generate(100),
+          description: charsLength100,
+          expectDescription: charsLength100,
         },
         {
           testName: 'send null',
           description: null,
+          expectDescription: null,
         },
-      ])('$testName', async ({ description }) => {
+        {
+          testName: 'send string wrapped with spaces, return trimmed',
+          description: `  ${charsLength100}  `,
+          expectDescription: charsLength100,
+        },
+      ])('$testName', async ({ description, expectDescription }) => {
         const res = await appRequest
           .put(`/store/profile`)
           .send({ name, description, location })
@@ -117,7 +127,7 @@ describe('PUT /store/profile', () => {
           status: 'success',
           data: {
             name,
-            description,
+            description: expectDescription,
             location,
           },
         });
@@ -194,22 +204,32 @@ describe('PUT /store/profile', () => {
   describe('location PROPERTY', () => {
     const name = 'Best Store';
     const description = 'Best Store in HOMETOWN BOYS!!!';
+    const charsLength3 = randomstring.generate(3);
+    const charsLength100 = randomstring.generate(100);
 
     describe('should respond success', () => {
       test.each([
         {
           testName: 'send 3 chars',
-          location: randomstring.generate(3),
+          location: charsLength3,
+          expectLocation: charsLength3,
         },
         {
           testName: 'send 100 chars',
-          location: randomstring.generate(100),
+          location: charsLength100,
+          expectLocation: charsLength100,
         },
         {
           testName: 'send null',
           location: null,
+          expectLocation: null,
         },
-      ])('$testName', async ({ location }) => {
+        {
+          testName: 'send string wrapped with spaces, return trimmed',
+          location: `  ${charsLength100}  `,
+          expectLocation: charsLength100,
+        },
+      ])('$testName', async ({ location, expectLocation }) => {
         const res = await appRequest
           .put(`/store/profile`)
           .send({ name, description, location })
@@ -221,7 +241,7 @@ describe('PUT /store/profile', () => {
           data: {
             name,
             description,
-            location,
+            location: expectLocation,
           },
         });
       });
