@@ -3,6 +3,7 @@ const path = require('path');
 const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
+const compression = require('compression');
 const authRoute = require('./routes/authRoute');
 const linksRoute = require('./routes/linksRoute');
 const itemsRoute = require('./routes/itemsRoute');
@@ -26,6 +27,7 @@ app.use(
         : ['http://localhost:3000'],
   })
 );
+app.use(compression());
 app.use(cookieParser());
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, '../uploads')));
