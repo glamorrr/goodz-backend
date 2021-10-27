@@ -1,11 +1,15 @@
-const { writeFile, access, unlink } = require('fs').promises;
+const { writeFile, unlink } = require('fs').promises;
+const { existsSync, mkdirSync } = require('fs');
 const { join } = require('path');
 
 const uploadFolder =
   process.env.NODE_ENV !== 'test' ? 'uploads' : 'uploads_test';
 
 const uploadImage = async (image) => {
-  await access(join(__dirname, `../../${uploadFolder}`));
+  if (!existsSync(join(__dirname, `../../${uploadFolder}`))) {
+    mkdirSync(join(__dirname, `../../${uploadFolder}`));
+  }
+
   const destination = join(
     __dirname,
     `../../${uploadFolder}`,
