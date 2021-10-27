@@ -77,6 +77,9 @@ module.exports.login_post = async (req, res) => {
     const isAuthenticated = await user.isPasswordValid(password);
     if (!isAuthenticated) throw new OtherError('invalid email and password');
 
+    user.lastLoggedIn = new Date();
+    await user.save();
+
     res.setHeader(
       'Set-Cookie',
       cookie.serialize('token', createToken({ id: user.id }), {

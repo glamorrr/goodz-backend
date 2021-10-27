@@ -1,7 +1,6 @@
 'use strict';
 const bcrypt = require('bcrypt');
-const moment = require('moment');
-const { Model } = require('sequelize');
+const { Model, Sequelize } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -53,6 +52,11 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
+      lastLoggedIn: {
+        type: DataTypes.DATE,
+        defaultValue: Sequelize.NOW,
+        allowNull: false,
+      },
       hashedPassword: {
         type: DataTypes.STRING(100),
       },
@@ -88,6 +92,8 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: 'User',
       tableName: 'app_user',
+      timestamps: true,
+      updatedAt: false,
     }
   );
   return User;
