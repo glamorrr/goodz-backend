@@ -170,42 +170,68 @@ describe('DELETE /items/:id', () => {
         });
 
         expect(resGet.status).toBe(200);
-        expect(resGet.body).toMatchObject({
+        expect(resGet.body).toStrictEqual({
           status: 'success',
           data: [
             {
+              id: expect.any(String),
+              header: null,
               position: 1,
               item: {
+                id: expect.any(String),
                 name: user1Item[5].name,
                 price: user1Item[5].price,
+                isVisible: expect.any(Boolean),
+                image: null,
               },
             },
             {
+              id: expect.any(String),
+              header: null,
               position: 2,
               item: {
+                id: expect.any(String),
+                isVisible: expect.any(Boolean),
                 name: user1Item[3].name,
                 price: user1Item[3].price,
+                isVisible: expect.any(Boolean),
+                image: expect.anything(),
               },
             },
             {
+              id: expect.any(String),
+              header: null,
               position: 3,
               item: {
+                id: expect.any(String),
                 name: user1Item[2].name,
                 price: user1Item[2].price,
+                isVisible: expect.any(Boolean),
+                image: null,
               },
             },
             {
+              id: expect.any(String),
+              header: null,
               position: 4,
               item: {
+                id: expect.any(String),
                 name: user1Item[1].name,
                 price: user1Item[1].price,
+                isVisible: expect.any(Boolean),
+                image: null,
               },
             },
             {
+              id: expect.any(String),
+              header: null,
               position: 5,
               item: {
+                id: expect.any(String),
                 name: user1Item[0].name,
                 price: user1Item[0].price,
+                isVisible: expect.any(Boolean),
+                image: null,
               },
             },
           ],
@@ -233,35 +259,55 @@ describe('DELETE /items/:id', () => {
         });
 
         expect(resGet.status).toBe(200);
-        expect(resGet.body).toMatchObject({
+        expect(resGet.body).toStrictEqual({
           status: 'success',
           data: [
             {
+              id: expect.any(String),
+              header: null,
               position: 1,
               item: {
+                id: expect.any(String),
                 name: user1Item[5].name,
                 price: user1Item[5].price,
+                isVisible: expect.any(Boolean),
+                image: null,
               },
             },
             {
+              id: expect.any(String),
+              header: null,
               position: 2,
               item: {
+                id: expect.any(String),
                 name: user1Item[2].name,
                 price: user1Item[2].price,
+                isVisible: expect.any(Boolean),
+                image: null,
               },
             },
             {
+              id: expect.any(String),
+              header: null,
               position: 3,
               item: {
+                id: expect.any(String),
                 name: user1Item[1].name,
                 price: user1Item[1].price,
+                isVisible: expect.any(Boolean),
+                image: null,
               },
             },
             {
+              id: expect.any(String),
+              header: null,
               position: 4,
               item: {
+                id: expect.any(String),
                 name: user1Item[0].name,
                 price: user1Item[0].price,
+                isVisible: expect.any(Boolean),
+                image: null,
               },
             },
           ],

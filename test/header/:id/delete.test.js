@@ -147,36 +147,56 @@ describe('DELETE /header/:id', () => {
         });
 
         expect(resGet.status).toBe(200);
-        expect(resGet.body).toMatchObject({
+        expect(resGet.body).toStrictEqual({
           status: 'success',
           data: [
             {
+              id: expect.any(String),
+              item: null,
               position: 1,
               header: {
+                id: expect.any(String),
+                isVisible: expect.any(Boolean),
                 title: user1Header[5].title,
               },
             },
             {
+              id: expect.any(String),
+              item: null,
               position: 2,
               header: {
+                id: expect.any(String),
+                isVisible: expect.any(Boolean),
                 title: user1Header[3].title,
               },
             },
             {
+              id: expect.any(String),
+              item: null,
               position: 3,
               header: {
+                id: expect.any(String),
+                isVisible: expect.any(Boolean),
                 title: user1Header[2].title,
               },
             },
             {
+              id: expect.any(String),
+              item: null,
               position: 4,
               header: {
+                id: expect.any(String),
+                isVisible: expect.any(Boolean),
                 title: user1Header[1].title,
               },
             },
             {
+              id: expect.any(String),
+              item: null,
               position: 5,
               header: {
+                id: expect.any(String),
+                isVisible: expect.any(Boolean),
                 title: user1Header[0].title,
               },
             },

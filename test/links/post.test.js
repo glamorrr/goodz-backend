@@ -46,12 +46,14 @@ describe('POST /links', () => {
             .set('cookie', authCookie);
 
           expect(res.status).toBe(201);
-          expect(res.body).toMatchObject({
+          expect(res.body).toStrictEqual({
             status: 'success',
             data: {
+              id: expect.any(String),
               title: 'Random STuff',
               href: 'randomstuff.com',
               position: 1,
+              isVisible: true,
             },
           });
         });

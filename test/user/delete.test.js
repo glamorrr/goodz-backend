@@ -113,7 +113,7 @@ describe('DELETE /user', () => {
       const res = await appRequest.get(`/url/${url}`);
 
       expect(res.status).toBe(404);
-      expect(res.body).toMatchObject({
+      expect(res.body).toStrictEqual({
         status: 'fail',
         data: { message: 'url not found' },
       });
@@ -135,7 +135,7 @@ describe('DELETE /user', () => {
       const res = await appRequest.get('/store').set('cookie', authCookie);
 
       expect(res.status).toBe(404);
-      expect(res.body).toMatchObject({
+      expect(res.body).toStrictEqual({
         status: 'fail',
         data: { message: 'store not found' },
       });
@@ -202,7 +202,7 @@ describe('DELETE /user', () => {
       const res = await appRequest.get('/links').set('cookie', authCookie);
 
       expect(res.status).toBe(200);
-      expect(res.body).toMatchObject({
+      expect(res.body).toStrictEqual({
         status: 'success',
         data: [],
       });
@@ -275,7 +275,7 @@ describe('DELETE /user', () => {
       const res = await appRequest.get('/catalog').set('cookie', authCookie);
 
       expect(res.status).toBe(200);
-      expect(res.body).toMatchObject({
+      expect(res.body).toStrictEqual({
         status: 'success',
         data: [],
       });
