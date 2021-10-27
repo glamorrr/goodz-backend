@@ -21,7 +21,7 @@ describe('GET /catalog', () => {
     const res = await appRequest.get('/catalog').set('cookie', authCookie);
 
     expect(res.status).toBe(200);
-    expect(res.body).toMatchObject({
+    expect(res.body).toStrictEqual({
       status: 'success',
       data: [],
     });

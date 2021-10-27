@@ -42,7 +42,6 @@ module.exports.items_post = async (req, res) => {
 
       const itemResult = newItem.toJSON();
       delete itemResult.catalogId;
-      delete itemResult.imageId;
 
       return {
         ...catalogResult,

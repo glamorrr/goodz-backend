@@ -53,12 +53,12 @@ module.exports.url_get = async (req, res) => {
     const background =
       store.images.find((image) => image.type === STORE_BACKGROUND)?.toJSON() ||
       null;
-    delete background.type;
+    delete background?.type;
 
     const image =
       store.images.find((image) => image.type === STORE_IMAGE)?.toJSON() ||
       null;
-    delete image.type;
+    delete image?.type;
 
     const storeResult = store.toJSON();
     delete storeResult.images;
