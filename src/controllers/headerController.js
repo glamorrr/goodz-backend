@@ -17,9 +17,18 @@ module.exports.header_post = async (req, res) => {
   const { title } = req.body;
 
   try {
-    const store = await Store.findOne({ where: { userId } });
+    const store = await Store.findOne({
+      where: { userId },
+      include: 'catalog',
+    });
 
     if (!store) throw new ResourceNotFoundError('store not found');
+
+    if (store.catalog.length >= 100) {
+      throw new OtherError(
+        'You have reached your limit! Maximum catalog is 100.'
+      );
+    }
 
     const result = await sequelize.transaction(async (t) => {
       await Catalog.update(
@@ -49,6 +58,10 @@ module.exports.header_post = async (req, res) => {
 
     return res.status(201).json(handleSuccess(result));
   } catch (err) {
+    if (err instanceof OtherError) {
+      return res.status(400).json(handleFail(null, { message: err.message }));
+    }
+
     if (err instanceof ResourceNotFoundError) {
       return res.status(404).json(handleFail(null, { message: err.message }));
     }

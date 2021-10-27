@@ -19,6 +19,10 @@ module.exports.links_post = async (req, res) => {
 
     if (!store) throw new ResourceNotFoundError('store not found');
 
+    if (store.links.length >= 50) {
+      throw new OtherError('You have reached your limit! Maximum links is 50.');
+    }
+
     const newLink = await sequelize.transaction(async (t) => {
       await Link.update(
         { position: sequelize.literal('position + 1') },
@@ -37,6 +41,10 @@ module.exports.links_post = async (req, res) => {
 
     return res.status(201).json(handleSuccess(linkResult));
   } catch (err) {
+    if (err instanceof OtherError) {
+      return res.status(400).json(handleFail(null, { message: err.message }));
+    }
+
     if (err instanceof ResourceNotFoundError) {
       return res.status(404).json(handleFail(null, { message: err.message }));
     }
