@@ -13,8 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(User, { foreignKey: 'userId', onDelete: 'cascade' });
       this.hasMany(Link, { foreignKey: 'storeId', as: 'links' });
       this.hasMany(Catalog, { foreignKey: 'storeId', as: 'catalog' });
-      this.belongsTo(Image, { foreignKey: 'imageId', as: 'image' });
-      this.belongsTo(Image, { foreignKey: 'backgroundId', as: 'background' });
+      this.hasMany(Image, { foreignKey: 'storeId', as: 'images' });
     }
 
     async isLinkPositionValid(position) {

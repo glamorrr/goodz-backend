@@ -165,7 +165,7 @@ describe('DELETE /items/:id', () => {
             id: expect.any(String),
             name: selectedItem.name,
             price: selectedItem.price,
-            imageId: null,
+            image: null,
           },
         });
 
@@ -228,7 +228,7 @@ describe('DELETE /items/:id', () => {
             id: expect.any(String),
             name: selectedItemWithImage.name,
             price: selectedItemWithImage.price,
-            imageId: selectedItemWithImage.image.id,
+            image: selectedItemWithImage.image,
           },
         });
 

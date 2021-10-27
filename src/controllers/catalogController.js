@@ -26,7 +26,7 @@ module.exports.catalog_get = async (req, res) => {
           include: {
             model: Image,
             as: 'image',
-            attributes: { exclude: ['userId'] },
+            attributes: { exclude: ['userId', 'itemId', 'storeId', 'type'] },
           },
           attributes: { exclude: ['imageId', 'catalogId'] },
         },

@@ -11,6 +11,7 @@ const {
   handleError,
 } = require('../utils/handleJSON');
 const { deleteImage, uploadImage } = require('../utils/image');
+const { STORE_IMAGE, STORE_BACKGROUND } = require('../utils/IMAGE_TYPE');
 
 module.exports.store_get = async (req, res) => {
   const userId = req.user.id;
@@ -18,23 +19,37 @@ module.exports.store_get = async (req, res) => {
   try {
     const store = await Store.findOne({
       where: { userId },
-      include: [
-        {
-          model: Image,
-          as: 'image',
-          attributes: { exclude: ['userId'] },
-        },
-        {
-          model: Image,
-          as: 'background',
-          attributes: { exclude: ['userId'] },
-        },
-      ],
-      attributes: { exclude: ['userId', 'imageId', 'backgroundId'] },
+      include: {
+        model: Image,
+        as: 'images',
+        attributes: { exclude: ['userId', 'storeId', 'itemId'] },
+      },
+      attributes: { exclude: ['userId'] },
     });
 
-    return res.status(200).json(handleSuccess(store));
+    if (!store) throw new ResourceNotFoundError('store not found');
+
+    const background =
+      store.images.find((image) => image.type === STORE_BACKGROUND)?.toJSON() ||
+      null;
+
+    const image =
+      store.images.find((image) => image.type === STORE_IMAGE)?.toJSON() ||
+      null;
+
+    const storeResult = store.toJSON();
+    delete storeResult.images;
+    delete background?.type;
+    delete image?.type;
+
+    return res
+      .status(200)
+      .json(handleSuccess({ ...storeResult, background, image }));
   } catch (err) {
+    if (err instanceof ResourceNotFoundError) {
+      return res.status(404).json(handleFail(null, { message: err.message }));
+    }
+
     return res.status(500).json(handleError(err));
   }
 };
@@ -193,16 +208,23 @@ module.exports.store_image_post = async (req, res) => {
   try {
     if (!image) throw new OtherError('please insert an image');
 
-    const store = await Store.findOne({ where: { userId } });
+    const store = await Store.findOne({
+      where: { userId },
+      include: {
+        model: Image,
+        as: 'images',
+      },
+    });
 
     if (!store) throw new ResourceNotFoundError('store not found');
 
     const result = await sequelize.transaction(async (t) => {
-      const isImageInStore = store.imageId;
-      if (isImageInStore) {
+      const imageInStore = store.images.find(
+        (image) => image.type === STORE_IMAGE
+      );
+      if (imageInStore) {
         const selectedImage = await Image.findOne({
-          where: { id: store.imageId },
-          attributes: ['id', 'path', 'blurhash', 'color'],
+          where: { id: imageInStore.id },
           transaction: t,
         });
 
@@ -213,33 +235,25 @@ module.exports.store_image_post = async (req, res) => {
       await uploadImage(image);
 
       const { filename, blurhash, color } = image.info;
-      const newImage = await Image.create(
+
+      const newImage = await store.createImage(
         {
+          userId: store.userId,
+          type: STORE_IMAGE,
           path: filename,
           blurhash,
           color,
-          userId: store.userId,
         },
         { transaction: t }
       );
 
-      const updatedStore = (
-        await Store.update(
-          { imageId: newImage.id },
-          {
-            where: { id: store.id },
-            returning: true,
-            plain: true,
-            transaction: t,
-          }
-        )
-      )[1];
-      if (!updatedStore) throw new OtherError('store image not updated');
-
       const newImageResult = newImage.toJSON();
       delete newImageResult.userId;
+      delete newImageResult.itemId;
+      delete newImageResult.storeId;
+      delete newImageResult.type;
 
-      return { id: updatedStore.id, image: newImageResult };
+      return { id: store.id, image: newImageResult };
     });
 
     return res.status(200).json(handleSuccess(result));
@@ -263,16 +277,23 @@ module.exports.store_background_post = async (req, res) => {
   try {
     if (!image) throw new OtherError('please insert an image');
 
-    const store = await Store.findOne({ where: { userId } });
+    const store = await Store.findOne({
+      where: { userId },
+      include: {
+        model: Image,
+        as: 'images',
+      },
+    });
 
     if (!store) throw new ResourceNotFoundError('store not found');
 
     const result = await sequelize.transaction(async (t) => {
-      const isImageInStore = store.backgroundId;
-      if (isImageInStore) {
+      const backgroundInStore = store.images.find(
+        (image) => image.type === STORE_BACKGROUND
+      );
+      if (backgroundInStore) {
         const selectedImage = await Image.findOne({
-          where: { id: store.backgroundId },
-          attributes: ['id', 'path', 'blurhash', 'color'],
+          where: { id: backgroundInStore.id },
           transaction: t,
         });
 
@@ -283,33 +304,24 @@ module.exports.store_background_post = async (req, res) => {
       await uploadImage(image);
 
       const { filename, blurhash, color } = image.info;
-      const newImage = await Image.create(
+      const newBackground = await store.createImage(
         {
+          userId: store.userId,
+          type: STORE_BACKGROUND,
           path: filename,
           blurhash,
           color,
-          userId: store.userId,
         },
         { transaction: t }
       );
 
-      const updatedStore = (
-        await Store.update(
-          { backgroundId: newImage.id },
-          {
-            where: { id: store.id },
-            returning: true,
-            plain: true,
-            transaction: t,
-          }
-        )
-      )[1];
-      if (!updatedStore) throw new OtherError('store background not updated');
+      const newBackgroundResult = newBackground.toJSON();
+      delete newBackgroundResult.userId;
+      delete newBackgroundResult.itemId;
+      delete newBackgroundResult.storeId;
+      delete newBackgroundResult.type;
 
-      const newImageResult = newImage.toJSON();
-      delete newImageResult.userId;
-
-      return { id: updatedStore.id, background: newImageResult };
+      return { id: store.id, background: newBackgroundResult };
     });
 
     return res.status(200).json(handleSuccess(result));

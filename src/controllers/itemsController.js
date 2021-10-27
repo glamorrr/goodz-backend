@@ -13,6 +13,7 @@ const {
   handleError,
 } = require('../utils/handleJSON');
 const { uploadImage, deleteImage } = require('../utils/image');
+const { CATALOG_ITEM_IMAGE } = require('../utils/IMAGE_TYPE');
 
 module.exports.items_post = async (req, res) => {
   const userId = req.user.id;
@@ -154,11 +155,11 @@ module.exports.items_image_post = async (req, res) => {
     if (!store) throw new ResourceNotFoundError('item not found');
 
     const result = await sequelize.transaction(async (t) => {
-      const imageInItem = store.catalog[0].item.image;
+      const selectedItem = store.catalog[0].item;
+      const imageInItem = selectedItem.image;
       if (imageInItem) {
         const selectedImage = await Image.findOne({
           where: { id: imageInItem.id },
-          attributes: ['id', 'path', 'blurhash', 'color'],
           transaction: t,
         });
 
@@ -169,33 +170,26 @@ module.exports.items_image_post = async (req, res) => {
       await uploadImage(image);
 
       const { filename, blurhash, color } = image.info;
-      const newImage = await Image.create(
+
+      const newImage = await store.createImage(
         {
+          userId: store.userId,
+          itemId: selectedItem.id,
+          type: CATALOG_ITEM_IMAGE,
           path: filename,
           blurhash,
           color,
-          userId: store.userId,
         },
         { transaction: t }
       );
 
-      const updatedItem = (
-        await Item.update(
-          { imageId: newImage.id },
-          {
-            where: { id: itemId },
-            returning: true,
-            plain: true,
-            transaction: t,
-          }
-        )
-      )[1];
-      if (!updatedItem) throw new OtherError('item not updated');
-
       const newImageResult = newImage.toJSON();
       delete newImageResult.userId;
+      delete newImageResult.itemId;
+      delete newImageResult.storeId;
+      delete newImageResult.type;
 
-      return { id: updatedItem.id, image: newImageResult };
+      return { id: selectedItem.id, image: newImageResult };
     });
 
     return res.status(200).json(handleSuccess(result));
@@ -227,10 +221,12 @@ module.exports.items_delete = async (req, res) => {
           include: {
             model: Image,
             as: 'image',
+            attributes: { exclude: ['userId', 'itemId', 'storeId', 'type'] },
           },
         },
       ],
     });
+
     if (!selectedCatalog) throw new ResourceNotFoundError('item not found');
 
     const result = await sequelize.transaction(async (t) => {
@@ -262,7 +258,7 @@ module.exports.items_delete = async (req, res) => {
         id: selectedCatalog.item.id,
         name: selectedCatalog.item.name,
         price: selectedCatalog.item.price,
-        imageId: selectedCatalog.item.imageId,
+        image: selectedCatalog.item.image,
       };
     });
 

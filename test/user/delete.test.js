@@ -134,10 +134,10 @@ describe('DELETE /user', () => {
     test('GET /store', async () => {
       const res = await appRequest.get('/store').set('cookie', authCookie);
 
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(404);
       expect(res.body).toMatchObject({
-        status: 'success',
-        data: null,
+        status: 'fail',
+        data: { message: 'store not found' },
       });
     });
 

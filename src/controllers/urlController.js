@@ -5,6 +5,7 @@ const {
   handleError,
   handleFail,
 } = require('../utils/handleJSON');
+const { STORE_BACKGROUND, STORE_IMAGE } = require('../utils/IMAGE_TYPE');
 
 module.exports.url_get = async (req, res) => {
   const { url } = req.params;
@@ -12,18 +13,11 @@ module.exports.url_get = async (req, res) => {
   try {
     const store = await Store.findOne({
       where: { url },
-      include: [
-        {
-          model: Image,
-          as: 'image',
-          attributes: { exclude: ['userId'] },
-        },
-        {
-          model: Image,
-          as: 'background',
-          attributes: { exclude: ['userId'] },
-        },
-      ],
+      include: {
+        model: Image,
+        as: 'images',
+        attributes: { exclude: ['userId', 'storeId', 'itemId'] },
+      },
       attributes: { exclude: ['userId', 'imageId', 'backgroundId'] },
     });
 
@@ -45,7 +39,7 @@ module.exports.url_get = async (req, res) => {
           include: {
             model: Image,
             as: 'image',
-            attributes: { exclude: ['userId'] },
+            attributes: { exclude: ['userId', 'itemId', 'storeId', 'type'] },
           },
         },
         {
@@ -56,9 +50,24 @@ module.exports.url_get = async (req, res) => {
       ],
     });
 
+    const background =
+      store.images.find((image) => image.type === STORE_BACKGROUND)?.toJSON() ||
+      null;
+    delete background.type;
+
+    const image =
+      store.images.find((image) => image.type === STORE_IMAGE)?.toJSON() ||
+      null;
+    delete image.type;
+
+    const storeResult = store.toJSON();
+    delete storeResult.images;
+
     return res
       .status(200)
-      .json(handleSuccess({ ...store.toJSON(), links, catalog }));
+      .json(
+        handleSuccess({ ...storeResult, background, image, links, catalog })
+      );
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return res.status(404).json(handleFail(null, { message: err.message }));
