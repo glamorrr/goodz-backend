@@ -1,5 +1,6 @@
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
 const authRoute = require('./routes/authRoute');
@@ -16,6 +17,15 @@ const verifyAuth = require('./middlewares/verifyAuth');
 const app = express();
 
 app.use(helmet());
+app.use(
+  cors({
+    credentials: true,
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? 'https://goodz.id'
+        : ['http://localhost:3000'],
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, '../uploads')));

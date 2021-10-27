@@ -12,6 +12,12 @@ const {
   handleError,
 } = require('../utils/handleJSON');
 const { createToken, JWT_MAX_AGE } = require('../utils/jwt');
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+  path: '/',
+  sameSite: 'lax',
+};
 
 module.exports.signup_post = async (req, res) => {
   const { email, password, name, url } = req.body;
@@ -74,10 +80,8 @@ module.exports.login_post = async (req, res) => {
     res.setHeader(
       'Set-Cookie',
       cookie.serialize('token', createToken({ id: user.id }), {
-        httpOnly: true,
         maxAge: JWT_MAX_AGE,
-        secure: true,
-        sameSite: 'strict',
+        ...cookieOptions,
       })
     );
     res.status(200).json(handleSuccess());
@@ -96,6 +100,9 @@ module.exports.login_post = async (req, res) => {
 };
 
 module.exports.logout_post = (req, res) => {
-  res.setHeader('Set-Cookie', cookie.serialize('token', '', { maxAge: 1 }));
+  res.setHeader(
+    'Set-Cookie',
+    cookie.serialize('token', '', { maxAge: 1, ...cookieOptions })
+  );
   res.status(200).json(handleSuccess());
 };

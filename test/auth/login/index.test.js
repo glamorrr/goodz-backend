@@ -1,7 +1,7 @@
 const appRequest = require('../../appRequest');
 
 describe('POST /auth/login', () => {
-  test('should respond logged in and send cookies httpOnly sameSiteStrict secureTrue maxAge3600', async () => {
+  test('should respond logged in and send cookies httpOnly sameSite=Lax secure=true maxAge=3600', async () => {
     const res = await appRequest
       .post('/auth/login')
       .send({ email: 'mcdindonesia@gmail.com', password: 'mcdindonesia' });
@@ -15,7 +15,7 @@ describe('POST /auth/login', () => {
     expect(res.header['set-cookie'][0]).toContain('HttpOnly');
     expect(res.header['set-cookie'][0]).toContain('Max-Age=3600');
     expect(res.header['set-cookie'][0]).toContain('Secure');
-    expect(res.header['set-cookie'][0]).toContain('SameSite=Strict');
+    expect(res.header['set-cookie'][0]).toContain('SameSite=Lax');
   });
 
   test('should respond invalid (wrong password)', async () => {
