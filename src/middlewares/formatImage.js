@@ -22,7 +22,7 @@ module.exports = ({ width = 400, height = 400 }) => {
     try {
       const optimizedImage = await sharp(req.file.buffer)
         .resize({ width, height })
-        .png({ quality: 70 })
+        .png({ quality: 80 })
         .toBuffer({ resolveWithObject: true });
 
       const smallImage = await sharp(optimizedImage.data)
