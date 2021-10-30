@@ -1,4 +1,5 @@
 const cookieParser = require('cookie-parser');
+const debug = require('debug')('http');
 const path = require('path');
 const cors = require('cors');
 const express = require('express');
@@ -27,6 +28,10 @@ app.use(
         : ['http://localhost:3000'],
   })
 );
+app.use((req, res, next) => {
+  debug(`${req.method} ${req.url}`);
+  next();
+});
 app.use(compression());
 app.use(cookieParser());
 app.use(express.json());
