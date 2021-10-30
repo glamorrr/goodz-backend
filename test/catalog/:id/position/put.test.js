@@ -6,14 +6,33 @@ describe('PUT /catalog/:id/position', () => {
   let selectedCatalog;
 
   beforeAll(async () => {
+    const email1 = 'catalogidposition@gmail.com';
+    const password1 = 'catalogidposition1';
+    const email2 = 'catalogidposition2@gmail.com';
+    const password2 = 'catalogidposition2';
+
+    await appRequest.post('/auth/signup').send({
+      email: email1,
+      password: password1,
+      name: 'putidcatalogidpost',
+      url: 'catalogidposition',
+    });
+
+    await appRequest.post('/auth/signup').send({
+      email: email2,
+      password: password2,
+      name: 'putidcatalogidpost',
+      url: 'catalogidposition2',
+    });
+
     const resLogin = await appRequest
       .post('/auth/login')
-      .send({ email: 'mcdindonesia@gmail.com', password: 'mcdindonesia' });
+      .send({ email: email1, password: password1 });
     authCookie = resLogin.header['set-cookie'][0];
 
     const resLogin2 = await appRequest
       .post('/auth/login')
-      .send({ email: 'kfcindonesia@gmail.com', password: 'kfcindonesia' });
+      .send({ email: email2, password: password2 });
     authCookieOtherUser = resLogin2.header['set-cookie'][0];
 
     await appRequest

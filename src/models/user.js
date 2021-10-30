@@ -12,11 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate({ Store, Image }) {
       // define association here
       this.hasOne(Store, { foreignKey: 'userId' });
-      this.hasMany(Image, {
-        foreignKey: 'userId',
-        as: 'images',
-        onDelete: 'cascade',
-      });
+      this.hasMany(Image, { foreignKey: 'userId', as: 'images' });
     }
 
     async isPasswordValid(plainTextPassword) {

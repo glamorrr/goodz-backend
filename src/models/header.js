@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ Catalog }) {
       // define association here
-      this.belongsTo(Catalog, { foreignKey: 'catalogId' });
+      this.belongsTo(Catalog, { foreignKey: 'catalogId', onDelete: 'cascade' });
     }
   }
   Header.init(

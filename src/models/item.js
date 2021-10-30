@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate({ Image, Catalog }) {
       // define association here
       this.hasOne(Image, { foreignKey: 'itemId', as: 'image' });
-      this.belongsTo(Catalog, { foreignKey: 'catalogId' });
+      this.belongsTo(Catalog, { foreignKey: 'catalogId', onDelete: 'cascade' });
     }
   }
   Item.init(

@@ -1,6 +1,6 @@
 const appRequest = require('../appRequest');
 
-describe('GET /catalog', () => {
+describe('GET /store', () => {
   let authCookie;
 
   beforeAll(async () => {

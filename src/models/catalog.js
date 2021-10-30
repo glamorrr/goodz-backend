@@ -14,16 +14,8 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'cascade',
         as: 'store',
       });
-      this.hasOne(Item, {
-        foreignKey: 'catalogId',
-        as: 'item',
-        onDelete: 'cascade',
-      });
-      this.hasOne(Header, {
-        foreignKey: 'catalogId',
-        as: 'header',
-        onDelete: 'cascade',
-      });
+      this.hasOne(Item, { foreignKey: 'catalogId', as: 'item' });
+      this.hasOne(Header, { foreignKey: 'catalogId', as: 'header' });
     }
   }
   Catalog.init(

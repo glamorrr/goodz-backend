@@ -1,10 +1,20 @@
 const appRequest = require('../../appRequest');
 
 describe('POST /auth/login', () => {
+  const email = 'postlogin@gmail.com';
+  const password = 'postlogin123';
+
+  beforeAll(async () => {
+    await appRequest.post('/auth/signup').send({
+      email,
+      password,
+      name: 'Post Login',
+      url: 'postlogin',
+    });
+  });
+
   test('should respond logged in and send cookies httpOnly sameSite=Lax secure=true maxAge=3600', async () => {
-    const res = await appRequest
-      .post('/auth/login')
-      .send({ email: 'mcdindonesia@gmail.com', password: 'mcdindonesia' });
+    const res = await appRequest.post('/auth/login').send({ email, password });
 
     expect(res.status).toBe(200);
     expect(res.body).toStrictEqual({
@@ -21,7 +31,7 @@ describe('POST /auth/login', () => {
   test('should respond invalid (wrong password)', async () => {
     const res = await appRequest
       .post('/auth/login')
-      .send({ email: 'mcdindonesia@gmail.com', password: 'wrongpassword' });
+      .send({ email, password: 'wrongpassword' });
 
     expect(res.status).toBe(401);
     expect(res.body).toStrictEqual({
@@ -33,7 +43,7 @@ describe('POST /auth/login', () => {
   test('should respond invalid (no email in database)', async () => {
     const res = await appRequest
       .post('/auth/login')
-      .send({ email: 'mcdindonesi@gmail.com', password: 'mcdenak' });
+      .send({ email: 'randomz90192498@gmail.com', password });
 
     expect(res.status).toBe(401);
     expect(res.body).toStrictEqual({
@@ -42,7 +52,7 @@ describe('POST /auth/login', () => {
     });
   });
 
-  test('should respond invalid (request send email null and password null)', async () => {
+  test('should respond invalid (send email: null, password: null)', async () => {
     const res = await appRequest
       .post('/auth/login')
       .send({ email: null, password: null });

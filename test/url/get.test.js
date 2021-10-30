@@ -1,6 +1,6 @@
 const appRequest = require('../appRequest');
 
-describe('GET /catalog', () => {
+describe('GET /url', () => {
   beforeAll(async () => {
     await appRequest.post('/auth/signup').send({
       email: 'geturl123@gmail.com',
