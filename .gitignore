@@ -9,4 +9,5 @@ uploads_test
 
 *.sql
 
+.DS_store
 jest_html_reporters.html
