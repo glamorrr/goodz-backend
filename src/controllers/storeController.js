@@ -1,6 +1,7 @@
 const {
   Store,
   Image,
+  User,
   Pageview,
   sequelize,
   Sequelize: { ValidationError, UniqueConstraintError },
@@ -22,6 +23,11 @@ module.exports.store_get = async (req, res) => {
       where: { userId },
       include: [
         {
+          model: User,
+          as: 'user',
+          attributes: ['email'],
+        },
+        {
           model: Image,
           as: 'images',
           attributes: { exclude: ['userId', 'storeId', 'itemId'] },
@@ -32,7 +38,6 @@ module.exports.store_get = async (req, res) => {
           attributes: { exclude: ['storeId'] },
         },
       ],
-      attributes: { exclude: ['userId'] },
     });
 
     if (!store) throw new ResourceNotFoundError('store not found');
@@ -68,12 +73,20 @@ module.exports.store_get = async (req, res) => {
     const storeResult = store.toJSON();
     delete storeResult.images;
     delete storeResult.pageviews;
+    delete storeResult.userId;
+    delete storeResult.user;
     delete background?.type;
     delete image?.type;
 
-    return res
-      .status(200)
-      .json(handleSuccess({ ...storeResult, background, image, pageviews }));
+    return res.status(200).json(
+      handleSuccess({
+        ...storeResult,
+        email: store.user.email,
+        background,
+        image,
+        pageviews,
+      })
+    );
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return res.status(404).json(handleFail(null, { message: err.message }));

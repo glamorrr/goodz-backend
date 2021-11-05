@@ -10,7 +10,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ User, Link, Catalog, Image, Pageview }) {
       // define association here
-      this.belongsTo(User, { foreignKey: 'userId', onDelete: 'cascade' });
+      this.belongsTo(User, {
+        foreignKey: 'userId',
+        onDelete: 'cascade',
+        as: 'user',
+      });
       this.hasMany(Link, { foreignKey: 'storeId', as: 'links' });
       this.hasMany(Pageview, { foreignKey: 'storeId', as: 'pageviews' });
       this.hasMany(Catalog, { foreignKey: 'storeId', as: 'catalog' });

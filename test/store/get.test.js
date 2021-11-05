@@ -25,6 +25,7 @@ describe('GET /store', () => {
       status: 'success',
       data: {
         id: expect.any(String),
+        email: 'getstore@gmail.com',
         url: 'getstore123',
         name: 'getstore',
         isCredit: false,
