@@ -87,7 +87,7 @@ module.exports.url_pageview_post = async (req, res) => {
     req.useragent.browser !== 'unknown' && !req.useragent.isBot;
 
   if (!isUserAgentValid) return res.status(200).json(handleSuccess());
-
+  // todo: kalo last visit ada di cookie, tapi dia di url yang berbeda gimana?
   const lastVisitMilliseconds = new Date(req.cookies.last_visit).getTime();
   const currentMilliseconds = new Date().getTime();
 
@@ -110,8 +110,10 @@ module.exports.url_pageview_post = async (req, res) => {
       where: { url },
       attributes: ['id', 'url', 'userId'],
     });
-    const isStoreOwner = userId === store?.userId;
 
+    if (!store) throw new ResourceNotFoundError('url not found');
+
+    const isStoreOwner = userId === store.userId;
     if (isStoreOwner) return res.status(200).json(handleSuccess());
 
     await store.createPageview({
@@ -130,6 +132,10 @@ module.exports.url_pageview_post = async (req, res) => {
       .status(201)
       .json(handleSuccess({ isMobile: req.useragent.isMobile }));
   } catch (err) {
+    if (err instanceof ResourceNotFoundError) {
+      return res.status(404).json(handleFail(null, { message: err.message }));
+    }
+
     return res.status(500).json(handleError(err));
   }
 };

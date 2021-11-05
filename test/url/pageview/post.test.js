@@ -117,4 +117,16 @@ describe('POST /url/:url/pageview', () => {
       data: null,
     });
   });
+
+  test('should respond 404', async () => {
+    const res = await appRequest
+      .post('/url/randoms2hie0928/pageview')
+      .set('user-agent', desktopUserAgent);
+
+    expect(res.status).toBe(404);
+    expect(res.body).toStrictEqual({
+      status: 'fail',
+      data: { message: 'url not found' },
+    });
+  });
 });
