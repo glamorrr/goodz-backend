@@ -1,4 +1,7 @@
+const cookie = require('cookie');
+const jwt = require('jsonwebtoken');
 const { Store, Image, Item, Header } = require('../models');
+const COOKIE_OPTIONS = require('../utils/COOKIE_OPTIONS');
 const { ResourceNotFoundError } = require('../utils/error');
 const {
   handleSuccess,
@@ -73,6 +76,60 @@ module.exports.url_get = async (req, res) => {
       return res.status(404).json(handleFail(null, { message: err.message }));
     }
 
+    return res.status(500).json(handleError(err));
+  }
+};
+
+module.exports.url_pageview_post = async (req, res) => {
+  const { url } = req.params;
+
+  const isUserAgentValid =
+    req.useragent.browser !== 'unknown' && !req.useragent.isBot;
+
+  if (!isUserAgentValid) return res.status(200).json(handleSuccess());
+
+  const lastVisitMilliseconds = new Date(req.cookies.last_visit).getTime();
+  const currentMilliseconds = new Date().getTime();
+
+  const fiveMinutesInSeconds = 5 * 60;
+  const isDateDiffrenceSufficient =
+    currentMilliseconds - lastVisitMilliseconds > fiveMinutesInSeconds * 1000;
+
+  const shouldCountPageview =
+    !req.cookies.last_visit ||
+    (!Number.isNaN(lastVisitMilliseconds) && isDateDiffrenceSufficient);
+
+  if (!shouldCountPageview) return res.status(200).json(handleSuccess());
+
+  const authToken = req.cookies.token;
+  const payload = jwt.decode(authToken);
+
+  try {
+    const userId = payload?.id || null;
+    const store = await Store.findOne({
+      where: { url },
+      attributes: ['id', 'url', 'userId'],
+    });
+    const isStoreOwner = userId === store?.userId;
+
+    if (isStoreOwner) return res.status(200).json(handleSuccess());
+
+    await store.createPageview({
+      isMobile: req.useragent.isMobile,
+    });
+
+    res.setHeader(
+      'Set-Cookie',
+      cookie.serialize('last_visit', new Date(), {
+        ...COOKIE_OPTIONS,
+        maxAge: fiveMinutesInSeconds,
+      })
+    );
+
+    return res
+      .status(201)
+      .json(handleSuccess({ isMobile: req.useragent.isMobile }));
+  } catch (err) {
     return res.status(500).json(handleError(err));
   }
 };

@@ -5,6 +5,7 @@ const {
   sequelize,
   Sequelize: { UniqueConstraintError, ValidationError },
 } = require('../models');
+const COOKIE_OPTIONS = require('../utils/COOKIE_OPTIONS');
 const { ResourceNotFoundError, OtherError } = require('../utils/error');
 const {
   handleSuccess,
@@ -12,12 +13,6 @@ const {
   handleError,
 } = require('../utils/handleJSON');
 const { createToken, JWT_MAX_AGE } = require('../utils/jwt');
-const cookieOptions = {
-  httpOnly: true,
-  secure: true,
-  path: '/',
-  sameSite: 'lax',
-};
 
 module.exports.signup_post = async (req, res) => {
   const { email, password, name, url } = req.body;
@@ -83,8 +78,8 @@ module.exports.login_post = async (req, res) => {
     res.setHeader(
       'Set-Cookie',
       cookie.serialize('token', createToken({ id: user.id }), {
+        ...COOKIE_OPTIONS,
         maxAge: JWT_MAX_AGE,
-        ...cookieOptions,
       })
     );
     res.status(200).json(handleSuccess());
@@ -105,7 +100,7 @@ module.exports.login_post = async (req, res) => {
 module.exports.logout_post = (req, res) => {
   res.setHeader(
     'Set-Cookie',
-    cookie.serialize('token', '', { maxAge: 1, ...cookieOptions })
+    cookie.serialize('token', '', { ...COOKIE_OPTIONS, maxAge: 1 })
   );
   res.status(200).json(handleSuccess());
 };
