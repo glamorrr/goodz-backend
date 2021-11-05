@@ -33,6 +33,16 @@ describe('GET /store', () => {
         currencyCode: 'ID',
         background: null,
         image: null,
+        pageviews: {
+          allTime: {
+            desktop: 0,
+            mobile: 0,
+          },
+          last30Days: {
+            desktop: 0,
+            mobile: 0,
+          },
+        },
       },
     });
   });

@@ -1,6 +1,7 @@
 const {
   Store,
   Image,
+  Pageview,
   sequelize,
   Sequelize: { ValidationError, UniqueConstraintError },
 } = require('../models');
@@ -19,15 +20,42 @@ module.exports.store_get = async (req, res) => {
   try {
     const store = await Store.findOne({
       where: { userId },
-      include: {
-        model: Image,
-        as: 'images',
-        attributes: { exclude: ['userId', 'storeId', 'itemId'] },
-      },
+      include: [
+        {
+          model: Image,
+          as: 'images',
+          attributes: { exclude: ['userId', 'storeId', 'itemId'] },
+        },
+        {
+          model: Pageview,
+          as: 'pageviews',
+          attributes: { exclude: ['storeId'] },
+        },
+      ],
       attributes: { exclude: ['userId'] },
     });
 
     if (!store) throw new ResourceNotFoundError('store not found');
+
+    const pageviews = {
+      allTime: { mobile: 0, desktop: 0 },
+      last30Days: { mobile: 0, desktop: 0 },
+    };
+
+    store.pageviews.forEach((pageview) => {
+      const createdAtInMs = new Date(pageview.createdAt).getTime();
+      const currentDateInMs = new Date().getTime();
+      const oneMonthInMs = 30 * 24 * 60 * 60 * 1000;
+      const isIn30Days = currentDateInMs - createdAtInMs <= oneMonthInMs;
+
+      if (pageview.isMobile) {
+        pageviews.allTime.mobile += 1;
+        if (isIn30Days) pageviews.last30Days.mobile += 1;
+      } else {
+        pageviews.allTime.desktop += 1;
+        if (isIn30Days) pageviews.last30Days.desktop += 1;
+      }
+    });
 
     const background =
       store.images.find((image) => image.type === STORE_BACKGROUND)?.toJSON() ||
@@ -39,12 +67,13 @@ module.exports.store_get = async (req, res) => {
 
     const storeResult = store.toJSON();
     delete storeResult.images;
+    delete storeResult.pageviews;
     delete background?.type;
     delete image?.type;
 
     return res
       .status(200)
-      .json(handleSuccess({ ...storeResult, background, image }));
+      .json(handleSuccess({ ...storeResult, background, image, pageviews }));
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return res.status(404).json(handleFail(null, { message: err.message }));
