@@ -54,6 +54,19 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
+      href: {
+        type: DataTypes.TEXT,
+        allowNull: null,
+        defaultValue: null,
+        validate: {
+          isUrl: { msg: 'url must be a valid url' },
+          isString(value) {
+            if (typeof value !== 'string') {
+              throw new Error('url must be a valid url');
+            }
+          },
+        },
+      },
       isVisible: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
@@ -70,10 +83,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       hooks: {
-        beforeValidate(catalog, options) {
-          if (typeof catalog.name === 'string') {
-            catalog.name = catalog.name.trim();
-          }
+        beforeValidate(item, options) {
+          if (typeof item.name === 'string') item.name = item.name.trim();
+          if (typeof item.href === 'string') item.href = item.href.trim();
         },
       },
       sequelize,

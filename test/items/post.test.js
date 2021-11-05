@@ -65,6 +65,7 @@ describe('POST /items', () => {
                 name,
                 price,
                 isVisible: true,
+                href: null,
               },
             },
           });
@@ -149,6 +150,7 @@ describe('POST /items', () => {
               name,
               price,
               isVisible: true,
+              href: null,
             },
           },
         });
@@ -176,6 +178,7 @@ describe('POST /items', () => {
               name,
               price,
               isVisible: true,
+              href: null,
             },
           },
         });
@@ -202,6 +205,7 @@ describe('POST /items', () => {
               name: name.trim(),
               price,
               isVisible: true,
+              href: null,
             },
           },
         });
@@ -392,6 +396,7 @@ describe('POST /items', () => {
               name,
               price,
               isVisible: true,
+              href: null,
             },
           },
         });
@@ -418,6 +423,7 @@ describe('POST /items', () => {
               name,
               price,
               isVisible: true,
+              href: null,
             },
           },
         });
@@ -444,6 +450,7 @@ describe('POST /items', () => {
               name,
               price,
               isVisible: true,
+              href: null,
             },
           },
         });

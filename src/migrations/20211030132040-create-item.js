@@ -25,6 +25,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+      href: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
       is_visible: {
         type: Sequelize.BOOLEAN,
         allowNull: false,

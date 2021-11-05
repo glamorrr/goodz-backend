@@ -83,7 +83,7 @@ module.exports.items_post = async (req, res) => {
 module.exports.items_put = async (req, res) => {
   const userId = req.user.id;
   const itemId = req.params.id;
-  const { name, price, isVisible } = req.body;
+  const { name, price, isVisible, href } = req.body;
   try {
     const store = await Store.findOne({
       where: { userId },
@@ -107,10 +107,10 @@ module.exports.items_put = async (req, res) => {
 
     const updatedItem = (
       await Item.update(
-        { name, price, isVisible },
+        { name, price, isVisible, href },
         {
           where: { id: itemId },
-          returning: ['id', 'name', 'price', 'is_visible'],
+          returning: ['id', 'name', 'price', 'href', 'is_visible'],
           plain: true,
         }
       )
