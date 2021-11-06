@@ -87,7 +87,7 @@ module.exports.url_pageview_post = async (req, res) => {
     req.useragent.browser !== 'unknown' && !req.useragent.isBot;
 
   if (!isUserAgentValid) return res.status(200).json(handleSuccess());
-  // todo: kalo last visit ada di cookie, tapi dia di url yang berbeda gimana?
+
   const lastVisitMilliseconds = new Date(req.cookies.last_visit).getTime();
   const currentMilliseconds = new Date().getTime();
 
