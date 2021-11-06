@@ -1,5 +1,6 @@
 const cookieParser = require('cookie-parser');
 const debug = require('debug')('http');
+const responseTime = require('response-time');
 const path = require('path');
 const cors = require('cors');
 const express = require('express');
@@ -28,10 +29,13 @@ app.use(
         : ['http://localhost:3000'],
   })
 );
-app.use((req, res, next) => {
-  debug(`${req.method} ${req.url}`);
-  next();
-});
+app.use(responseTime({ digits: 0 }));
+app.use(
+  responseTime((req, res, time) => {
+    const formattedTime = `${Math.ceil(time)}ms`;
+    debug(`${req.method} ${req.originalUrl} ${formattedTime}`);
+  })
+);
 app.use(compression());
 app.use(cookieParser());
 app.use(express.json());
