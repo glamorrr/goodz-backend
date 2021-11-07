@@ -48,7 +48,7 @@ describe('DELETE /images/:id', () => {
 
     const resItemImage1 = await appRequest
       .post(`/items/${user1Item.id}/image`)
-      .attach('image', path.join(assetPath, '3MB.jpg'))
+      .attach('image', path.join(assetPath, '300KB.png'))
       .set('cookie', authCookie1);
 
     user1ItemImage = resItemImage1.body.data.image;

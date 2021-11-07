@@ -51,7 +51,7 @@ describe('POST /items/:id/image', () => {
       test('should respond fail', async () => {
         const res = await appRequest
           .post(`/items/${user1Item.id}/image`)
-          .attach('image', path.join(assetPath, '3MB.jpg'));
+          .attach('image', path.join(assetPath, '300KB.png'));
 
         expect(res.status).toBe(401);
         expect(res.body).toStrictEqual({
@@ -67,7 +67,7 @@ describe('POST /items/:id/image', () => {
       test("should respond fail update another user's item image", async () => {
         const res = await appRequest
           .post(`/items/${user1Item.id}/image`)
-          .attach('image', path.join(assetPath, '3MB.jpg'))
+          .attach('image', path.join(assetPath, '300KB.png'))
           .set('cookie', authCookie2);
 
         expect(res.status).toBe(404);
@@ -85,7 +85,7 @@ describe('POST /items/:id/image', () => {
         test('send valid data', async () => {
           const res = await appRequest
             .post(`/items/${user1Item.id}/image`)
-            .attach('image', path.join(assetPath, '3MB.jpg'))
+            .attach('image', path.join(assetPath, '300KB.png'))
             .set('cookie', authCookie1);
 
           expect(res.status).toBe(200);
@@ -171,27 +171,6 @@ describe('POST /items/:id/image', () => {
     });
 
     describe('should respond success', () => {
-      test('send 3MB.jpg', async () => {
-        const res = await appRequest
-          .post(`/items/${selectedItem.id}/image`)
-          .attach('image', path.join(assetPath, '3MB.jpg'))
-          .set('cookie', authCookie);
-
-        expect(res.status).toBe(200);
-        expect(res.body).toStrictEqual({
-          status: 'success',
-          data: {
-            id: selectedItem.id,
-            image: {
-              id: expect.any(String),
-              path: expect.any(String),
-              blurhash: expect.any(String),
-              color: expect.any(String),
-            },
-          },
-        });
-      });
-
       test('send 13KB.jpeg', async () => {
         const res = await appRequest
           .post(`/items/${selectedItem.id}/image`)
@@ -246,7 +225,7 @@ describe('POST /items/:id/image', () => {
         expect(res.body).toStrictEqual({
           status: 'fail',
           data: {
-            message: 'maximum file size is 5 MB',
+            message: 'maximum file size is 2 MB',
           },
         });
       });

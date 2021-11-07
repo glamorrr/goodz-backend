@@ -27,7 +27,7 @@ describe('POST /store/image', () => {
     test('should respond fail', async () => {
       const res = await appRequest
         .post(`/store/image`)
-        .attach('image', path.join(assetPath, '3MB.jpg'));
+        .attach('image', path.join(assetPath, '300KB.png'));
 
       expect(res.status).toBe(401);
       expect(res.body).toStrictEqual({
@@ -44,7 +44,7 @@ describe('POST /store/image', () => {
       test('send valid data', async () => {
         const res = await appRequest
           .post(`/store/image`)
-          .attach('image', path.join(assetPath, '3MB.jpg'))
+          .attach('image', path.join(assetPath, '300KB.png'))
           .set('cookie', authCookie1);
 
         expect(res.status).toBe(200);

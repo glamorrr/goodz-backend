@@ -12,7 +12,7 @@ const upload = multer({
     callback(null, true);
   },
   limits: {
-    fileSize: 5 * 1000 * 1000,
+    fileSize: 2 * 1000 * 1000,
   },
 }).single('image');
 
@@ -21,7 +21,7 @@ module.exports = async (req, res, next) => {
     if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
       return res
         .status(400)
-        .json(handleFail(err, { message: 'maximum file size is 5 MB' }));
+        .json(handleFail(err, { message: 'maximum file size is 2 MB' }));
     }
 
     if (err instanceof multer.MulterError) {
