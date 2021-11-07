@@ -16,6 +16,7 @@ const urlRoute = require('./routes/urlRoute');
 const userRoute = require('./routes/userRoute');
 const storeRoute = require('./routes/storeRoute');
 const verifyAuth = require('./middlewares/verifyAuth');
+const { authLimiter } = require('./utils/rateLimiter');
 
 const app = express();
 
@@ -41,14 +42,14 @@ app.use(cookieParser());
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, '../uploads')));
 
-app.use('/auth', authRoute);
+app.use('/auth', authLimiter, authRoute);
 app.use('/url', urlRoute);
+app.use('/images', imagesRoute);
 app.use('/user', verifyAuth, userRoute);
 app.use('/store', verifyAuth, storeRoute);
 app.use('/links', verifyAuth, linksRoute);
 app.use('/items', verifyAuth, itemsRoute);
 app.use('/catalog', verifyAuth, catalogRoute);
-app.use('/images', verifyAuth, imagesRoute);
 app.use('/header', verifyAuth, headerRoute);
 
 module.exports = app;
