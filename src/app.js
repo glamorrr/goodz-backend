@@ -1,7 +1,6 @@
 const cookieParser = require('cookie-parser');
 const debug = require('debug')('http');
 const responseTime = require('response-time');
-const path = require('path');
 const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
@@ -40,7 +39,6 @@ app.use(
 app.use(compression());
 app.use(cookieParser());
 app.use(express.json());
-app.use('/images', express.static(path.join(__dirname, '../uploads')));
 
 app.use('/auth', authLimiter, authRoute);
 app.use('/url', urlRoute);

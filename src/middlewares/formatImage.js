@@ -49,7 +49,13 @@ module.exports = ({ width = 400, height = 400 }) => {
 
       req.image = {
         data: optimizedImage.data,
-        info: { filename: generatedFileName, blurhash, color },
+        info: {
+          filename: generatedFileName,
+          blurhash,
+          color,
+          format: optimizedImage.info.format,
+          size: optimizedImage.info.size,
+        },
       };
       next();
     } catch (err) {
