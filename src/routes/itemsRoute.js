@@ -2,7 +2,6 @@ const { Router } = require('express');
 const itemsController = require('../controllers/itemsController');
 const uploadImage = require('../middlewares/uploadImage');
 const formatImage = require('../middlewares/formatImage');
-const { uploadImageLimiter } = require('../utils/rateLimiter');
 
 const router = Router();
 
@@ -11,7 +10,7 @@ router.put('/:id', itemsController.items_put);
 router.delete('/:id', itemsController.items_delete);
 router.post(
   '/:id/image',
-  [uploadImageLimiter, uploadImage, formatImage({ width: 400, height: 400 })],
+  [uploadImage, formatImage({ width: 400, height: 400 })],
   itemsController.items_image_post
 );
 

@@ -2,7 +2,6 @@ const { Router } = require('express');
 const storeController = require('../controllers/storeController');
 const formatImage = require('../middlewares/formatImage');
 const uploadImage = require('../middlewares/uploadImage');
-const { uploadImageLimiter } = require('../utils/rateLimiter');
 
 const router = Router();
 
@@ -13,12 +12,12 @@ router.put('/url', storeController.store_url_put);
 router.put('/currency', storeController.store_currency_put);
 router.post(
   '/image',
-  [uploadImageLimiter, uploadImage, formatImage({ width: 160, height: 160 })],
+  [uploadImage, formatImage({ width: 160, height: 160 })],
   storeController.store_image_post
 );
 router.post(
   '/background',
-  [uploadImageLimiter, uploadImage, formatImage({ width: 1440, height: 450 })],
+  [uploadImage, formatImage({ width: 1440, height: 450 })],
   storeController.store_background_post
 );
 

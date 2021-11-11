@@ -15,7 +15,6 @@ const urlRoute = require('./routes/urlRoute');
 const userRoute = require('./routes/userRoute');
 const storeRoute = require('./routes/storeRoute');
 const verifyAuth = require('./middlewares/verifyAuth');
-const { authLimiter } = require('./utils/rateLimiter');
 
 const app = express();
 
@@ -40,7 +39,7 @@ app.use(compression());
 app.use(cookieParser());
 app.use(express.json());
 
-app.use('/auth', authLimiter, authRoute);
+app.use('/auth', authRoute);
 app.use('/url', urlRoute);
 app.use('/images', imagesRoute);
 app.use('/user', verifyAuth, userRoute);
