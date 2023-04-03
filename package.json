@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=development DEBUG=http nodemon src/server",
-    "test": "export NODE_ENV=test && npx sequelize db:drop && npx sequelize db:create && npx sequelize db:migrate && jest \"$npm_config_file\" --detectOpenHandles"
+    "dev": "cross-env  NODE_ENV=development DEBUG=http nodemon src/server",
+    "test": "cross-env NODE_ENV=test && npx sequelize db:drop && npx sequelize db:create && npx sequelize db:migrate && jest \"$npm_config_file\" --detectOpenHandles",
+    "start": "cross-env NODE_ENV=production DEBUG=http node src/server.js"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,7 @@
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "debug": "^4.3.2",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
