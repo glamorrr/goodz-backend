@@ -3,7 +3,7 @@ const COOKIE_OPTIONS = {
   secure: true,
   path: '/',
   sameSite: ['production', 'test'].includes(process.env.NODE_ENV)
-    ? 'lax'
+    ? 'none'
     : 'none',
 };
 
