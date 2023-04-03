@@ -24,7 +24,7 @@ app.use(
     credentials: true,
     origin:
       process.env.NODE_ENV === 'production'
-        ? 'https://goodz.id'
+        ? 'https://goodzid-staging.netlify.app'
         : ['http://localhost:3000'],
   })
 );
